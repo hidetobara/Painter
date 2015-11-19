@@ -1,5 +1,7 @@
 Unity/*.sln
 Unity/*.csproj
+Unity/*.suo
 Unity/Library
+Unity/Temp
 Unity/obj
 
