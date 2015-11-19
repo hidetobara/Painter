@@ -1,0 +1,5 @@
+Unity/*.sln
+Unity/*.csproj
+Unity/Library
+Unity/obj
+
