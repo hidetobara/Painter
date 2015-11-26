@@ -3,6 +3,8 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_FriendColor ("Friend", Color) = (1, 0, 0, 1)
+		_EnemyColor ("Enemy", Color) = (0, 1, 0, 1)
 	}
 	SubShader
 	{
@@ -38,12 +40,14 @@
 			}
 			
 			sampler2D _MainTex;
+			fixed4 _FriendColor;
+			fixed4 _EnemyColor;
 
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 col = tex2D(_MainTex, i.uv0);
 				float theta = sin( i.uv1.x * 5 ) * cos( i.uv1.y * 4 );
-				if(i.uv1.z > 1 - theta * theta * 0.9){ col.r = 1; col.g = 0.75; }
+				if(i.uv1.z > 1 - theta * theta * 0.9){ col = _FriendColor; }
 				return col;
 			}
 			ENDCG
