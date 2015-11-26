@@ -13,11 +13,22 @@ namespace Painter
 		private PlayerProperty _Player;
 		private WeaponProperty _Weapon;
 
+		private static MainPlayerController _Instance;
+		public static MainPlayerController Instance
+		{
+			get
+			{
+				if (_Instance == null) _Instance = FindObjectOfType<MainPlayerController>();
+				return _Instance;
+			}
+		}
+
 		void Start()
 		{
 			ConstantEnviroment.Instance.Initialize();
 			_Player = ConstantEnviroment.Instance.FriendPlayer;
 			_Weapon = ConstantEnviroment.Instance.MyWeapon;
+			DebugDialog.Instance.Initialize();
 		}
 
 		void Update()
@@ -40,35 +51,25 @@ namespace Painter
 			MainCamera.transform.LookAt(_Target);
 		}
 
-		void OnGUI()
-		{
-			float size = 80;
-			if (GUI.Button(new Rect(size, 0, size, size), "FRWRD")) ActForward();
-			if (GUI.Button(new Rect(0, size, size, size), "LEFT")) ActLeft();
-			if (GUI.Button(new Rect(size * 2, size, size, size), "RIGHT")) ActRight();
-			if (GUI.Button(new Rect(size, size * 2, size, size), "BCK")) ActBack();
-			if (GUI.Button(new Rect(size, size, size, size), "ATK")) ActAttack();
-		}
-
 		float _Velocity = 0;
 		float _Around = 0;
-		void ActForward()
+		public void ActForward()
 		{
 			_Velocity = 0.5f;
 		}
-		void ActLeft()
+		public void ActLeft()
 		{
 			_Around = -5;
 		}
-		void ActRight()
+		public void ActRight()
 		{
 			_Around = 5;
 		}
-		void ActBack()
+		public void ActBack()
 		{
 			_Velocity = -0.25f;
 		}
-		void ActAttack()
+		public void ActAttack()
 		{
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
 			Rigidbody r = o.GetComponent<Rigidbody>();

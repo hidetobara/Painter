@@ -18,7 +18,7 @@ namespace Painter
 	{
 		// Time
 		public virtual float StallTime { get { return 0.5f; } }
-		public virtual float BrokenTime { get { return 1.0f; } }
+		public virtual float BrokenTime { get { return 3.0f; } }
 
 		public virtual float Velocity { get { return 10.0f; } }
 	}
