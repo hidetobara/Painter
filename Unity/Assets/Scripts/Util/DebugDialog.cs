@@ -46,7 +46,7 @@ namespace Painter
 
 		void Update()
 		{
-			Print("gyro=" + Input.acceleration);
+			Print("Gyro=" + Input.acceleration + " " + Input.gyro.attitude.eulerAngles);
 		}
 
 		void OnGUI()

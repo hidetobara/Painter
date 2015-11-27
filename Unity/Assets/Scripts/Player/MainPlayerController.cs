@@ -49,26 +49,38 @@ namespace Painter
 			Vector3 bias = gameObject.transform.rotation * _CameraBias;
 			MainCamera.transform.position = transform.position + bias;
 			MainCamera.transform.LookAt(_Target);
+
+			// Attack
+			if(_IsAttacking && _AttackInterval > _Weapon.Interval)
+			{
+				ActAttack();
+				_AttackInterval = 0;
+			}
+			_AttackInterval += Time.deltaTime;
 		}
 
+		#region 移動
 		float _Velocity = 0;
 		float _Around = 0;
-		public void ActForward()
+		public void ActForward(float rate = 1)
 		{
-			_Velocity = 0.5f;
+			_Velocity = _Player.ForwardRate * Mathf.Clamp(rate, 0, 1);
 		}
-		public void ActLeft()
+		public void ActLeft(float rate = 1)
 		{
-			_Around = -5;
+			_Around = -_Player.AroundRate * Mathf.Clamp(rate, 0, 1);
 		}
-		public void ActRight()
+		public void ActRight(float rate = 1)
 		{
-			_Around = 5;
+			_Around = _Player.AroundRate * Mathf.Clamp(rate, 0, 1);
 		}
-		public void ActBack()
+		public void ActBack(float rate = 1)
 		{
-			_Velocity = -0.25f;
+			_Velocity = -_Player.BackRate * Mathf.Clamp(rate, 0, 1);
 		}
+		#endregion
+
+		#region 攻撃
 		public void ActAttack()
 		{
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
@@ -80,5 +92,17 @@ namespace Painter
 			InkBallController controller = o.GetComponent<InkBallController>();
 			controller.Initialize(_Player, _Weapon);
 		}
+
+		float _AttackInterval = 0;
+		bool _IsAttacking = false;
+		public void ActAttackStart()
+		{
+			_IsAttacking = true;
+		}
+		public void ActAttackEnd()
+		{
+			_IsAttacking = false;
+		}
+		#endregion
 	}
 }
