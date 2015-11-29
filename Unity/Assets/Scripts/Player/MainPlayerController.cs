@@ -7,8 +7,17 @@ namespace Painter
 	public class MainPlayerController : MonoBehaviour
 	{
 		public Camera MainCamera;
-		private Vector3 _CameraBias = new Vector3(0, 3, -5);
-		private Vector3 _Target;
+		private Vector3 _WeaponBias = new Vector3(0, 0, 4);
+		private Vector3 _CameraBias = new Vector3(0, 4, -4);
+
+		private GameObject Weapon;
+		private Vector3 _WeaponAngle;
+		public Vector3 WeaponAngle
+		{
+			set { Weapon.transform.rotation = gameObject.transform.rotation; Weapon.transform.Rotate(value); }
+			get { return _WeaponAngle; }
+		}
+
 		// 定数
 		private PlayerProperty _Player;
 		private WeaponProperty _Weapon;
@@ -29,6 +38,8 @@ namespace Painter
 			_Player = ConstantEnviroment.Instance.FriendPlayer;
 			_Weapon = ConstantEnviroment.Instance.MyWeapon;
 			DebugDialog.Instance.Initialize();
+
+			Weapon = transform.FindChild("Weapon").gameObject;
 		}
 
 		void Update()
@@ -42,13 +53,12 @@ namespace Painter
 			// Move
 			Vector3 move = gameObject.transform.rotation * new Vector3(0, 0, _Velocity);
 			gameObject.transform.position += move;
-			_Velocity *= 0.9f;
+			_Velocity *= 0.8f;
 
 			// Camera
-			_Target = gameObject.transform.forward * 3 + gameObject.transform.position;
-			Vector3 bias = gameObject.transform.rotation * _CameraBias;
-			MainCamera.transform.position = transform.position + bias;
-			MainCamera.transform.LookAt(_Target);
+			Vector3 target = gameObject.transform.position + Weapon.transform.rotation * _WeaponBias;
+			MainCamera.transform.position = gameObject.transform.position + Weapon.transform.rotation * _CameraBias;
+			MainCamera.transform.LookAt(target);
 
 			// Attack
 			if(_IsAttacking && _AttackInterval > _Weapon.Interval)
@@ -57,6 +67,7 @@ namespace Painter
 				_AttackInterval = 0;
 			}
 			_AttackInterval += Time.deltaTime;
+			WeaponAngle *= 0.9f;
 		}
 
 		#region 移動
@@ -85,9 +96,9 @@ namespace Painter
 		{
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
 			Rigidbody r = o.GetComponent<Rigidbody>();
-			o.transform.position = gameObject.transform.position + gameObject.transform.forward * 2;
-			o.transform.rotation = gameObject.transform.rotation;
-			r.velocity = gameObject.transform.forward * _Weapon.Velocity;
+			o.transform.position = Weapon.transform.position + Weapon.transform.rotation * new Vector3(0, 0, 1);
+			o.transform.rotation = Weapon.transform.rotation;
+			r.velocity = o.transform.rotation * new Vector3(0, 0, _Weapon.Velocity);
 
 			InkBallController controller = o.GetComponent<InkBallController>();
 			controller.Initialize(_Player, _Weapon);

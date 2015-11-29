@@ -46,7 +46,7 @@ namespace Painter
 
 		void Update()
 		{
-			Print("Gyro=" + Input.acceleration + " " + Input.gyro.attitude.eulerAngles);
+			Print("Gyro=" + Input.acceleration + System.Environment.NewLine + Log.Instance.GetInfo());
 		}
 
 		void OnGUI()
@@ -59,9 +59,7 @@ namespace Painter
 			if (GUI.Button(new Rect(size, size, size, size), "ATK")) _MainPlayer.ActAttack();
 		}
 
-		void Print(string s)
-		{
-			_Log.text = s;
-		}
+		void Print(string s) { _Log.text = s; }
+		float EulerAsin(float v) { return Mathf.Asin(Input.acceleration.y) * 180.0f / Mathf.PI; }
 	}
 }
