@@ -45,7 +45,7 @@ namespace Painter
 			foreach (int index in indexes)
 			{
 				Vector4 v = _Inks[index];
-				float z = v.z + 0.2f;
+				float z = v.z + 0.15f;
 				if (z > 1) z = 1;
 				_Inks[index] = new Vector4(v.x, v.y, z, v.w);
 			}

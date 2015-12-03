@@ -18,18 +18,18 @@ namespace Painter
 
 		void Update()
 		{
+			var player = MainPlayerController.Instance;
+#if !UNITY_EDITOR
 			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
 			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
-			var player = MainPlayerController.Instance;
 
 			Vector3 weapon = new Vector3(EulerAsin(ay) + 30f, 0, 0);
-
 			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
 			player.WeaponAngle = _BufferWeaponAngle;
 
 			if (ax > 0.1f) player.ActRight(ax);
 			else if (ax < 0.1f) player.ActLeft(-ax);
-
+#endif
 			if (_IsPressedMove) player.ActForward();
 		}
 

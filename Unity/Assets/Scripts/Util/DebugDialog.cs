@@ -46,7 +46,9 @@ namespace Painter
 
 		void Update()
 		{
+#if !UNITY_EDITOR
 			Print("Gyro=" + Input.acceleration + System.Environment.NewLine + Log.Instance.GetInfo());
+#endif
 		}
 
 		void OnGUI()
