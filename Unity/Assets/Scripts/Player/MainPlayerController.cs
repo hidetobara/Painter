@@ -34,12 +34,13 @@ namespace Painter
 
 		void Start()
 		{
-			ConstantEnviroment.Instance.Initialize();
 			_Player = ConstantEnviroment.Instance.FriendPlayer;
 			_Weapon = ConstantEnviroment.Instance.MyWeapon;
 			DebugDialog.Instance.Initialize();
 
 			Weapon = transform.FindChild("Weapon").gameObject;
+
+			gameObject.name = _Player.ID;
 		}
 
 		void Update()
@@ -68,6 +69,9 @@ namespace Painter
 			}
 			_AttackInterval += Time.deltaTime;
 			WeaponAngle *= 0.9f;
+
+			// Network
+			NetworkManager.Instance.AddPlayer(this.gameObject);
 		}
 
 		#region 移動
@@ -102,6 +106,8 @@ namespace Painter
 
 			InkBallController controller = o.GetComponent<InkBallController>();
 			controller.Initialize(_Player, _Weapon);
+
+			NetworkManager.Instance.AddBall(o);
 		}
 
 		float _AttackInterval = 0;

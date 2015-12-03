@@ -14,6 +14,7 @@ namespace Painter
 		public PlayerProperty FriendPlayer { get; private set; }
 		public PlayerProperty EnemyPlayer { get; private set; }
 		public WeaponProperty MyWeapon { get; private set; }
+		public NetworkProperty Network { get; private set; }
 
 		private static ConstantEnviroment _Instance;
 		public static ConstantEnviroment Instance
@@ -29,16 +30,17 @@ namespace Painter
 			}
 		}
 
-		public void Initialize() { }
-
 		void Awake()
 		{
+			NetworkManager.Instance.Initialize();
+
 			PrefabInkBall = Resources.Load(InkBallName);
 			PrefabInkScatter = Resources.Load(InkScatterName);
 
 			FriendPlayer = new PlayerProperty();
 			EnemyPlayer = new PlayerProperty();
 			MyWeapon = new WeaponProperty();
+			Network = new NetworkProperty();
 		}
 
 	}
