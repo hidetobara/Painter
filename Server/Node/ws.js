@@ -46,7 +46,7 @@ function broadcast(message){
 
 function broadcasting(){
 	if(syncs.length == 0) return;
-	dump(JSON.stringify(syncs));
+	//dump(JSON.stringify(syncs));
 	broadcast(JSON.stringify(syncs));
 	syncs = [];
 }

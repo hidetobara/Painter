@@ -53,5 +53,11 @@ namespace Painter
 			}
 			Destroy(this.gameObject, 0.1f);
 		}
+
+		public SyncBall Send()
+		{
+			Rigidbody r = this.GetComponent<Rigidbody>();
+			return new SyncBall() { Type = this.name, Position = this.transform.position, Rotation = this.transform.rotation, Velocity = r.velocity };
+		}
 	}
 }

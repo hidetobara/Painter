@@ -23,6 +23,7 @@ namespace Painter
 
 		public static string MyId;
 		public string Id;
+		public float Time;
 
 		public virtual string Name { get; protected set; }
 
@@ -31,10 +32,11 @@ namespace Painter
 			JsonHash hash = new JsonHash();
 			hash[NAME] = Name;
 			hash[ID] = MyId;
+			hash[TIME] = Time;
 			return hash;
 		}
 
-		bool IsMine() { return MyId == Id; }
+		public bool IsMine() { return MyId == Id; }
 
 		protected string VectorToString(Vector3 v)
 		{
@@ -112,12 +114,10 @@ namespace Painter
 	{
 		public override string Name { get { return "sta"; } }
 		public NetworkStatus Status;
-		public float Time;
 		public override JsonHash ToHash()
 		{
 			JsonHash hash = base.ToHash();
 			hash[STATUS] = Status.ToString().ToLower();
-			hash[TIME] = Time;
 			return hash;
 		}
 		protected override Synchronized Parse(JsonHash hash)
@@ -144,6 +144,7 @@ namespace Painter
 			Id = ParseString(hash, ID);
 			Position = ParseVector3(hash, POSITION);
 			Rotation = ParseQuaternion(hash, ROTATION);
+			Time = ParseFloat(hash, TIME);
 			return this;
 		}
 	}

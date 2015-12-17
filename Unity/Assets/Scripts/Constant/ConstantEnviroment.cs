@@ -7,9 +7,11 @@ namespace Painter
 	{
 		const string InkBallName = "InkBall";
 		const string InkScatterName = "InkScatter";
+		const string PlayerName = "Player";
 
 		public UnityEngine.Object PrefabInkBall { get; private set; }
 		public UnityEngine.Object PrefabInkScatter { get; private set; }
+		public UnityEngine.Object PrefabPlayer { get; private set; }
 
 		public PlayerProperty FriendPlayer { get; private set; }
 		public PlayerProperty EnemyPlayer { get; private set; }
@@ -36,6 +38,7 @@ namespace Painter
 
 			PrefabInkBall = Resources.Load(InkBallName);
 			PrefabInkScatter = Resources.Load(InkScatterName);
+			PrefabPlayer = Resources.Load(PlayerName);
 
 			FriendPlayer = new PlayerProperty();
 			EnemyPlayer = new PlayerProperty();

@@ -20,12 +20,12 @@ namespace Painter
 			}
 		}
 
-		MainPlayerController _MainPlayer;
+		MyPlayerController _MainPlayer;
 		GUIText _Log;
 
 		void Start()
 		{
-			_MainPlayer = MainPlayerController.Instance;
+			_MainPlayer = MyPlayerController.Instance;
 			_Log = gameObject.AddComponent<GUIText>();
 			_Log.transform.localPosition = new Vector3(0.1f, 0.9f, 0);
 			_Log.text = CalculateVertexes();

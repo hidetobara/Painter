@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace Painter
 {
-	public class MainPlayerController : MonoBehaviour
+	public class MyPlayerController : PlayerController
 	{
 		public Camera MainCamera;
 		private Vector3 _WeaponBias = new Vector3(0, 0, 4);
@@ -18,16 +18,12 @@ namespace Painter
 			get { return _WeaponAngle; }
 		}
 
-		// 定数
-		private PlayerProperty _Player;
-		private WeaponProperty _Weapon;
-
-		private static MainPlayerController _Instance;
-		public static MainPlayerController Instance
+		private static MyPlayerController _Instance;
+		public static MyPlayerController Instance
 		{
 			get
 			{
-				if (_Instance == null) _Instance = FindObjectOfType<MainPlayerController>();
+				if (_Instance == null) _Instance = FindObjectOfType<MyPlayerController>();
 				return _Instance;
 			}
 		}
@@ -39,8 +35,12 @@ namespace Painter
 			DebugDialog.Instance.Initialize();
 
 			Weapon = transform.FindChild("Weapon").gameObject;
+		}
 
-			gameObject.name = _Player.ID;
+		public void SetID(string id)
+		{
+			_Player.ID = id;
+			//gameObject.name = _Player.ID;
 		}
 
 		void Update()
@@ -71,7 +71,7 @@ namespace Painter
 			WeaponAngle *= 0.9f;
 
 			// Network
-			NetworkManager.Instance.AddPlayer(this.gameObject);
+			NetworkManager.Instance.AddNotify(this);
 		}
 
 		#region 移動
@@ -107,7 +107,7 @@ namespace Painter
 			InkBallController controller = o.GetComponent<InkBallController>();
 			controller.Initialize(_Player, _Weapon);
 
-			NetworkManager.Instance.AddBall(o);
+			NetworkManager.Instance.AddNotify(controller);
 		}
 
 		float _AttackInterval = 0;

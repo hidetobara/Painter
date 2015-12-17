@@ -27,6 +27,10 @@ namespace Painter
 		List<Synchronized> _List = new List<Synchronized>();
 		WebSocket _WebSocket;
 
+		float _ConnectedTime = 0;
+		float _BiasTime = 0;
+		float GetTime() { return Time.unscaledTime - _ConnectedTime + _BiasTime; }
+
 		public void Initialize() { }
 
 		void Start()
@@ -44,7 +48,7 @@ namespace Painter
 			while (true)
 			{
 				yield return null;
-				var recv = socket.RecvString(); Debug.Log(recv);
+				var recv = socket.RecvString();
 				var list = Synchronized.Parse(Json.Deserialize(recv) as JsonList);
 				if (list == null) continue;
 
@@ -53,9 +57,13 @@ namespace Painter
 					SyncStatus status = sync as SyncStatus;
 					if(status.Status == NetworkStatus.Start)
 					{
-						Synchronized.MyId = status.Id;
-						_WebSocket = socket;
-						Debug.Log("MyId=" + Synchronized.MyId);
+						// サーバーと接続できた時
+						Synchronized.MyId = status.Id;	// 自分IDを登録
+						MyPlayerController.Instance.SetID(status.Id);	// 自分IDを登録
+						_BiasTime = status.Time;	// 時間のずれを調整
+						_ConnectedTime = Time.unscaledTime;	// 通信始まった時間を登録
+						_WebSocket = socket;	// ソケット登録
+						Debug.Log("MyId=" + Synchronized.MyId + " Time=" + _BiasTime);
 						yield break;
 					}
 				}
@@ -71,7 +79,11 @@ namespace Painter
 			}
 			// 送信
 			JsonList list = new JsonList();
-			foreach (var o in _List) list.Add(o.ToHash());
+			foreach (var o in _List)
+			{
+				o.Time = GetTime();
+				list.Add(o.ToHash());
+			}
 			string json = Json.Serialize(list);
 			_WebSocket.SendString(json);
 			// 受信
@@ -79,22 +91,60 @@ namespace Painter
 			if (!string.IsNullOrEmpty(json))
 			{
 				var syncs = Synchronized.Parse(Json.Deserialize(json) as JsonList);
-				if (syncs != null) Debug.Log(syncs.Count);
+				if (syncs != null && syncs.Count > 0) Retrieve(syncs);
 			}
 			// 掃除
 			_List.Clear();
 		}
 
-		public void AddPlayer(GameObject o)
+		public void AddNotify(PlayerController controller)
 		{
-			_List.Add(new SyncPlayer() { Position = o.transform.position, Rotation = o.transform.rotation });
+			_List.Add(controller.Send());
 		}
-		public void AddBall(GameObject o)
+		public void AddNotify(InkBallController controller)
 		{
-			Rigidbody r = o.GetComponent<Rigidbody>();
-			_List.Add(new SyncBall() { Type = o.name, Position = o.transform.position, Rotation = o.transform.rotation, Velocity = r.velocity });
+			_List.Add(controller.Send());
 		}
 
+		private void Retrieve(List<Synchronized> list)
+		{
+			foreach(var s in list)
+			{
+				if (RetrieveBall(s)) continue;
+				if (RetrievePlayer(s)) continue;
+			}
+		}
+		private bool RetrieveBall(Synchronized s)
+		{
+			SyncBall ball = s as SyncBall;
+			if (ball == null) return false;
+			if(ball.IsMine())
+			{
+				Debug.Log("[Ball]" + ball.Time);
+				return false;
+			}
 
+			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
+			o.transform.position = ball.Position;
+			o.transform.rotation = ball.Rotation;
+			o.GetComponent<Rigidbody>().velocity = ball.Velocity;
+			return true;
+		}
+		private bool RetrievePlayer(Synchronized s)
+		{
+			SyncPlayer player = s as SyncPlayer;
+			if (player == null || player.IsMine()) return false;
+
+			PlayerController controller = PlayerController.Get(player.Id);
+			if(controller == null)
+			{
+				GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabPlayer) as GameObject;
+				controller = o.GetComponent<PlayerController>();
+				controller.Register(player);
+				Debug.Log("Player " + player.Id + " created");
+			}
+			controller.Recieve(player);
+			return true;
+		}
 	}
 }
