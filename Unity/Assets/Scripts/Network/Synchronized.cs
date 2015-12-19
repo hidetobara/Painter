@@ -8,11 +8,12 @@ namespace Painter
 {
 	using JsonHash = Dictionary<string, object>;
 	using JsonList = List<object>;
-	public enum NetworkStatus { None, Start, Update, End }
+	public enum NetworkStatus { None, Joining, Accept, Update, End }
 
 	public class Synchronized
 	{
 		protected const string NAME = "nam";
+		protected const string GROUP = "grp";
 		protected const string ID = "id";
 		protected const string STATUS = "sta";
 		protected const string TIME = "tim";
@@ -23,7 +24,8 @@ namespace Painter
 
 		public static string MyId;
 		public string Id;
-		public float Time;
+		public int Group;
+		public int Time;
 
 		public virtual string Name { get; protected set; }
 
@@ -32,7 +34,8 @@ namespace Painter
 			JsonHash hash = new JsonHash();
 			hash[NAME] = Name;
 			hash[ID] = MyId;
-			hash[TIME] = Time;
+			hash[GROUP] = Group;
+			//hash[TIME] = Time;
 			return hash;
 		}
 
@@ -47,21 +50,26 @@ namespace Painter
 			return string.Format("{0:f2}|{1:f2}|{2:f2}|{3:f2}", q.x, q.y, q.z, q.w);
 		}
 
-		public static List<Synchronized> Parse(JsonList list)
+		static List<Synchronized> _Instances = new List<Synchronized>() { new SyncStatus(), new SyncPlayer(), new SyncBall() };
+		public static Synchronized ParseHash(JsonHash hash)
+		{
+			if (hash == null) return null;
+			foreach (var i in _Instances)
+			{
+				var s = i.Parse(hash);
+				if (s != null) { return s; }
+			}
+			return null;
+		}
+		public static List<Synchronized> ParseList(JsonList list)
 		{
 			if (list == null || list.Count == 0) return null;
 
-			List<Synchronized> instances = new List<Synchronized>() { new SyncStatus(), new SyncPlayer(), new SyncBall() };
 			List<Synchronized> syncs = new List<Synchronized>();
 			foreach (var o in list)
 			{
-				JsonHash h = o as JsonHash;
-				if (h == null) continue;
-				foreach (var i in instances)
-				{
-					var s = i.Parse(h);
-					if (s != null) { syncs.Add(s); break; }
-				}
+				Synchronized s = ParseHash(o as JsonHash);
+				if (s != null) syncs.Add(s);
 			}
 			return syncs;
 		}
@@ -74,6 +82,13 @@ namespace Painter
 		{
 			if (!hash.ContainsKey(key) || hash[key] == null) return null;
 			return hash[key].ToString();
+		}
+		protected int ParseInt(JsonHash hash, string key)
+		{
+			if (!hash.ContainsKey(key) || hash[key] == null) return 0;
+			int value = 0;
+			if (int.TryParse(hash[key].ToString(), out value)) return value;
+			return 0;
 		}
 		protected float ParseFloat(JsonHash hash, string key)
 		{
@@ -123,7 +138,7 @@ namespace Painter
 		protected override Synchronized Parse(JsonHash hash)
 		{
 			if (ParseString(hash, NAME) != Name) return null;
-			return new SyncStatus() { Id = ParseString(hash, ID), Status = ParseEnum<NetworkStatus>(hash, STATUS), Time = ParseFloat(hash, TIME) };
+			return new SyncStatus() { Id = ParseString(hash, ID), Status = ParseEnum<NetworkStatus>(hash, STATUS), Group = ParseInt(hash, GROUP) };
 		}
 	}
 
@@ -144,7 +159,7 @@ namespace Painter
 			Id = ParseString(hash, ID);
 			Position = ParseVector3(hash, POSITION);
 			Rotation = ParseQuaternion(hash, ROTATION);
-			Time = ParseFloat(hash, TIME);
+			Group = ParseInt(hash, GROUP);
 			return this;
 		}
 	}

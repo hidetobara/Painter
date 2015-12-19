@@ -16,7 +16,9 @@ namespace Painter
 		public PlayerProperty FriendPlayer { get; private set; }
 		public PlayerProperty EnemyPlayer { get; private set; }
 		public WeaponProperty MyWeapon { get; private set; }
+		public WeaponTable WeaponTable { get; private set; }
 		public NetworkProperty Network { get; private set; }
+		public GroupProperty Group { get; private set; }
 
 		private static ConstantEnviroment _Instance;
 		public static ConstantEnviroment Instance
@@ -43,8 +45,12 @@ namespace Painter
 			FriendPlayer = new PlayerProperty();
 			EnemyPlayer = new PlayerProperty();
 			MyWeapon = new WeaponProperty();
+			WeaponTable = new WeaponTable();
 			Network = new NetworkProperty();
+			Group = new GroupProperty();
 		}
 
+		public Color FriendColor { get { return Group.GetColor(FriendPlayer.Group); } }
+		public Color EnemyColor { get { return Group.GetColor(EnemyPlayer.Group); } }
 	}
 }

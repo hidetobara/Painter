@@ -10,6 +10,9 @@ namespace Painter
 
 	public class NetworkManager : MonoBehaviour
 	{
+		const int DELTA_TIME = 33;
+		const int QUEUE_LIMIT = 30;
+
 		private static NetworkManager _Instance;
 		public static NetworkManager Instance
 		{
@@ -24,12 +27,10 @@ namespace Painter
 			}
 		}
 
-		List<Synchronized> _List = new List<Synchronized>();
+		List<Synchronized> _SendingQueue = new List<Synchronized>();
+		Queue<Synchronized> _SynchronizedQueue = new Queue<Synchronized>();
 		WebSocket _WebSocket;
-
-		float _ConnectedTime = 0;
-		float _BiasTime = 0;
-		float GetTime() { return Time.unscaledTime - _ConnectedTime + _BiasTime; }
+		int _StartTime = 0;
 
 		public void Initialize() { }
 
@@ -42,28 +43,28 @@ namespace Painter
 			var socket = new WebSocket(new Uri(ConstantEnviroment.Instance.Network.Address));
 			yield return StartCoroutine(socket.Connect());
 
-			JsonHash hash = new SyncStatus() { Status = NetworkStatus.Start, Time = 0 }.ToHash();
+			JsonHash hash = new SyncStatus() { Status = NetworkStatus.Joining }.ToHash();
 			socket.SendString(Json.Serialize(new JsonList() { hash }));
 
 			while (true)
 			{
 				yield return null;
 				var recv = socket.RecvString();
-				var list = Synchronized.Parse(Json.Deserialize(recv) as JsonList);
-				if (list == null) continue;
-
-				foreach (var sync in list)
+				Retrieve(recv);
+				while(_SynchronizedQueue.Count > 0)
 				{
-					SyncStatus status = sync as SyncStatus;
-					if(status.Status == NetworkStatus.Start)
+					Synchronized s = _SynchronizedQueue.Dequeue();
+					SyncStatus status = s as SyncStatus;
+					if (status == null) continue;
+
+					if (status.Status == NetworkStatus.Accept)
 					{
 						// サーバーと接続できた時
 						Synchronized.MyId = status.Id;	// 自分IDを登録
-						MyPlayerController.Instance.SetID(status.Id);	// 自分IDを登録
-						_BiasTime = status.Time;	// 時間のずれを調整
-						_ConnectedTime = Time.unscaledTime;	// 通信始まった時間を登録
+						MyPlayerController.Instance.SetID(status.Group, status.Id);	// 自分IDを登録
+						_StartTime = status.Time;	// 始まった時間
 						_WebSocket = socket;	// ソケット登録
-						Debug.Log("MyId=" + Synchronized.MyId + " Time=" + _BiasTime);
+						Debug.Log("MyId=" + Synchronized.MyId + " Time=" + _StartTime);
 						yield break;
 					}
 				}
@@ -74,63 +75,101 @@ namespace Painter
 		{
 			if (_WebSocket == null)
 			{
-				_List.Clear();
+				_SendingQueue.Clear();
 				return;
 			}
 			// 送信
 			JsonList list = new JsonList();
-			foreach (var o in _List)
+			foreach (var o in _SendingQueue)
 			{
-				o.Time = GetTime();
 				list.Add(o.ToHash());
 			}
 			string json = Json.Serialize(list);
 			_WebSocket.SendString(json);
-			// 受信
-			json = _WebSocket.RecvString();
-			if (!string.IsNullOrEmpty(json))
-			{
-				var syncs = Synchronized.Parse(Json.Deserialize(json) as JsonList);
-				if (syncs != null && syncs.Count > 0) Retrieve(syncs);
-			}
 			// 掃除
-			_List.Clear();
+			_SendingQueue.Clear();
+
+			// 受信
+			var receiving = _WebSocket.RecvString();
+			Retrieve(receiving);
+			// 同期
+			Synchronize();
 		}
 
 		public void AddNotify(PlayerController controller)
 		{
-			_List.Add(controller.Send());
+			_SendingQueue.Add(controller.Send());
 		}
 		public void AddNotify(InkBallController controller)
 		{
-			_List.Add(controller.Send());
+			_SendingQueue.Add(controller.Send());
 		}
 
-		private void Retrieve(List<Synchronized> list)
+		private void Retrieve(string str)
 		{
-			foreach(var s in list)
+			if (string.IsNullOrEmpty(str)) return;
+
+			JsonList list = new JsonList();
+			var obj = Json.Deserialize(str);
+			JsonHash objHash = obj as JsonHash;
+			if (objHash != null)
 			{
-				if (RetrieveBall(s)) continue;
-				if (RetrievePlayer(s)) continue;
+				list.Add(objHash);
+			}
+			else
+			{
+				list = obj as JsonList;
+				if (list == null) return;
+			}
+
+			foreach(var o in list)
+			{
+				JsonHash hash = o as JsonHash;
+				if (hash == null) continue;
+				if (!hash.ContainsKey("TIME") || !hash.ContainsKey("DATA")) continue;
+
+				int time = 0;
+				if (!int.TryParse(hash["TIME"].ToString(), out time)) continue;
+
+				Synchronized s = Synchronized.ParseHash(hash["DATA"] as JsonHash);
+				if (s == null) continue;
+
+				s.Time = time;	// サーバー時間を入れる
+				_SynchronizedQueue.Enqueue(s);
+			}
+
+			while (_SynchronizedQueue.Count > QUEUE_LIMIT) _SynchronizedQueue.Dequeue();	// 量を
+		}
+
+		private void Synchronize()
+		{
+			float first = 0;
+			while(_SynchronizedQueue.Count > 0)
+			{
+				Synchronized s = _SynchronizedQueue.Peek();
+				if (first == 0) first = s.Time;
+				if (first > s.Time + DELTA_TIME) break;	// 用調整
+
+				_SynchronizedQueue.Dequeue();	// 使ったので捨てる
+				if (SynchronizeBall(s)) continue;
+				if (SynchronizePlayer(s)) continue;
 			}
 		}
-		private bool RetrieveBall(Synchronized s)
+		private bool SynchronizeBall(Synchronized s)
 		{
 			SyncBall ball = s as SyncBall;
 			if (ball == null) return false;
 			if(ball.IsMine())
 			{
-				Debug.Log("[Ball]" + ball.Time);
+//				Debug.Log("[Ball]" + ball.Time + ball.Position);
 				return false;
 			}
 
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
-			o.transform.position = ball.Position;
-			o.transform.rotation = ball.Rotation;
-			o.GetComponent<Rigidbody>().velocity = ball.Velocity;
+			o.GetComponent<InkBallController>().Initialize(ball);
 			return true;
 		}
-		private bool RetrievePlayer(Synchronized s)
+		private bool SynchronizePlayer(Synchronized s)
 		{
 			SyncPlayer player = s as SyncPlayer;
 			if (player == null || player.IsMine()) return false;

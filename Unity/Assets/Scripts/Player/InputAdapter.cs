@@ -19,7 +19,7 @@ namespace Painter
 		void Update()
 		{
 			var player = MyPlayerController.Instance;
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && !UNITY_STANDALONE
 			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
 			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
 

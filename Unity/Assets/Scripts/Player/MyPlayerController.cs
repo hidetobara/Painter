@@ -37,8 +37,9 @@ namespace Painter
 			Weapon = transform.FindChild("Weapon").gameObject;
 		}
 
-		public void SetID(string id)
+		public void SetID(int group, string id)
 		{
+			_Player.Group = group;
 			_Player.ID = id;
 			//gameObject.name = _Player.ID;
 		}
@@ -105,7 +106,7 @@ namespace Painter
 			r.velocity = o.transform.rotation * new Vector3(0, 0, _Weapon.Velocity);
 
 			InkBallController controller = o.GetComponent<InkBallController>();
-			controller.Initialize(_Player, _Weapon);
+			controller.Initialize(_Player.Group, _Weapon);
 
 			NetworkManager.Instance.AddNotify(controller);
 		}

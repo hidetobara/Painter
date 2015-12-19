@@ -24,8 +24,8 @@ namespace Painter
 			for (int v = 0; v < _Mesh.vertices.Length; v++) _Worlds[v] = transform.TransformPoint(_Mesh.vertices[v]);
 
 			Renderer render = GetComponent<Renderer>();
-			render.material.SetColor("_FriendColor", ConstantEnviroment.Instance.FriendPlayer.MainColor);
-			render.material.SetColor("_EnemyColor", ConstantEnviroment.Instance.EnemyPlayer.MainColor);
+			render.material.SetColor("_FriendColor", ConstantEnviroment.Instance.FriendColor);
+			render.material.SetColor("_EnemyColor", ConstantEnviroment.Instance.EnemyColor);
 		}
 
 		void OnCollisionStay(Collision collision)

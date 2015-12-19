@@ -7,11 +7,11 @@ namespace Painter
 {
 	public class PlayerProperty
 	{
+		public int Group = 0;
 		public string ID = "Any";
-		public virtual Color MainColor { get { return Color.red; } }
 
-		public virtual float ForwardRate { get { return 0.25f; } }
-		public virtual float BackRate { get { return 0.25f; } }
+		public virtual float ForwardRate { get { return 0.15f; } }
+		public virtual float BackRate { get { return 0.15f; } }
 		public virtual float AroundRate { get { return 5f; } }
 	}
 }

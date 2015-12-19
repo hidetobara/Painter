@@ -6,19 +6,27 @@ namespace Painter
 {
 	public class InkBallController : MonoBehaviour
 	{
-		private PlayerProperty _Player;
+		private int _Group;
 		private WeaponProperty _Weapon;
 
-		public void Initialize(PlayerProperty p, WeaponProperty w)
+		public void Initialize(int group, WeaponProperty w)
 		{
-			_Player = p;
+			_Group = group;
 			_Weapon = w;
 
 			Renderer renderer = GetComponent<Renderer>();
 			if (renderer == null) return;
-			renderer.material.color = p.MainColor;
-
+			renderer.material.color = ConstantEnviroment.Instance.Group.GetColor(_Group);
 			StartCoroutine(StartingStall());
+		}
+
+		public void Initialize(SyncBall ball)
+		{
+			Initialize(ball.Group, ConstantEnviroment.Instance.WeaponTable.Get(ball.Type));
+
+			transform.position = ball.Position;
+			transform.rotation = ball.Rotation;
+			GetComponent<Rigidbody>().velocity = ball.Velocity;
 		}
 
 		private IEnumerator StartingStall()
@@ -49,7 +57,7 @@ namespace Painter
 				GameObject go = Instantiate(ConstantEnviroment.Instance.PrefabInkScatter) as GameObject;
 				go.transform.position = contact.point;
 				var controller = go.GetComponent<InkScatterController>();
-				controller.SetColor(_Player.MainColor);
+				controller.SetColor(ConstantEnviroment.Instance.Group.GetColor(_Group));
 			}
 			Destroy(this.gameObject, 0.1f);
 		}
@@ -57,7 +65,7 @@ namespace Painter
 		public SyncBall Send()
 		{
 			Rigidbody r = this.GetComponent<Rigidbody>();
-			return new SyncBall() { Type = this.name, Position = this.transform.position, Rotation = this.transform.rotation, Velocity = r.velocity };
+			return new SyncBall() { Type = _Weapon.Name, Position = this.transform.position, Rotation = this.transform.rotation, Velocity = r.velocity };
 		}
 	}
 }

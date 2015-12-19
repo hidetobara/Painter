@@ -1,33 +1,43 @@
 ﻿var http = require('http');
 var WSServer = require('websocket').server;
-var url = require('url');
 var plainHttpServer = http.createServer(function(req, res) {
 	res.writeHead(200, { 'Content-Type': 'text/html'});
 	res.end('Hello world');
 }).listen(12345);
 var webSocketServer = new WSServer({httpServer: plainHttpServer});
 
-var connections = {};
-var syncs = [];
-console.log("[info] Now waiting sockets.");
+var _start = 0;
+var _connections = {};
+var _syncs = [];
+
+console.log(getPassedString() + " Now waiting sockets.");
 
 webSocketServer.on('request', function (req) {
 	var websocket = req.accept(null, req.origin);
-	connections[req.key] = websocket;
-	dump(req.key + ">connected count=" + count(connections));
-	websocket.send('[{"nam":"sta","sta":"start","id":"' + req.key + '"}]');
+	_connections[req.key] = websocket;
+	console.log(getPassedString() + " key=" + req.key + ",connecttions=" + count(_connections));
+	var start = new Object();
+	start.TIME = getPassedTime();
+	start.DATA = { nam:"sta", sta:"accept", grp:0, id:req.key };
+	websocket.send(JSON.stringify(start));
 
 	websocket.on('message', function(msg) {
 		//console.log('"' + msg + '" is recieved from ' + req.origin + '!');
 		//dump(req.key + ">>" + msg.binaryData);
 		var list = JSON.parse(msg.binaryData);
-		for(var i in list) syncs.push(list[i]);
-		//broadcast(msg.binaryData);
+		for(var i in list)
+		{
+			var obj = new Object();
+			obj.TIME = getPassedTime();
+			obj.DATA = list[i];
+			_syncs.push(obj);
+		}
+		//broadcast(msg.binaryData);	// まとめて送信するので不要
 	});
 
 	websocket.on('close', function (code,desc) {
 		console.log(req.key + '>disconnected');
-		delete connections[req.key];
+		delete _connections[req.key];
 	});
 });
 
@@ -40,14 +50,21 @@ function count(obj){
 	for(var i in obj) cnt++;
 	return cnt;
 }
-function broadcast(message){
-	for(var i in connections) connections[i].send(message);
+function getPassedTime(){
+	if(_start == 0){ _start = new Date().getTime(); }
+	return new Date().getTime() - _start;
+}
+function getPassedString(){
+	return "#" + getPassedTime() + "\t";
 }
 
+function broadcast(message){
+	for(var i in _connections) _connections[i].send(message);
+}
 function broadcasting(){
-	if(syncs.length == 0) return;
-	//dump(JSON.stringify(syncs));
-	broadcast(JSON.stringify(syncs));
-	syncs = [];
+	if(_syncs.length == 0) return;
+	//dump(JSON.stringify(_syncs));
+	broadcast(JSON.stringify(_syncs));
+	_syncs = [];
 }
 setInterval(broadcasting, 100);
