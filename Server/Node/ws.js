@@ -3,7 +3,7 @@ var WSServer = require('websocket').server;
 var plainHttpServer = http.createServer(function(req, res) {
 	res.writeHead(200, { 'Content-Type': 'text/html'});
 	res.end('Hello world');
-}).listen(12345);
+}).listen(55555);
 var webSocketServer = new WSServer({httpServer: plainHttpServer});
 
 var _start = 0;

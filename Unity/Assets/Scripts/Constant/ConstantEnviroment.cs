@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿#define STAGING
+using UnityEngine;
 using System.Collections;
+using Painter.Site;
 
 namespace Painter
 {
@@ -48,6 +50,9 @@ namespace Painter
 			WeaponTable = new WeaponTable();
 			Network = new NetworkProperty();
 			Group = new GroupProperty();
+#if STAGING
+			Network = new StagingNetworkProperty();
+#endif
 		}
 
 		public Color FriendColor { get { return Group.GetColor(FriendPlayer.Group); } }

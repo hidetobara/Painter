@@ -40,6 +40,7 @@ namespace Painter
 		}
 		IEnumerator Starting()
 		{
+			Debug.Log("Connecting:" + ConstantEnviroment.Instance.Network.Address);
 			var socket = new WebSocket(new Uri(ConstantEnviroment.Instance.Network.Address));
 			yield return StartCoroutine(socket.Connect());
 
@@ -161,7 +162,6 @@ namespace Painter
 			if (ball == null) return false;
 			if(ball.IsMine())
 			{
-//				Debug.Log("[Ball]" + ball.Time + ball.Position);
 				return false;
 			}
 
