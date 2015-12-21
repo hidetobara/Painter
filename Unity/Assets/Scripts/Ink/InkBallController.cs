@@ -6,17 +6,19 @@ namespace Painter
 {
 	public class InkBallController : MonoBehaviour
 	{
-		private int _Group;
+		public int Group { get; private set; }
+		public bool IsGroup1 { get { return Group == GroupProperty.GROUP1; } }
+		public bool IsGroup2 { get { return Group == GroupProperty.GROUP2; } }
 		private WeaponProperty _Weapon;
 
 		public void Initialize(int group, WeaponProperty w)
 		{
-			_Group = group;
+			Group = group;
 			_Weapon = w;
 
 			Renderer renderer = GetComponent<Renderer>();
 			if (renderer == null) return;
-			renderer.material.color = ConstantEnviroment.Instance.Group.GetColor(_Group);
+			renderer.material.color = ConstantEnviroment.Instance.Group.GetColor(Group);
 			StartCoroutine(StartingStall());
 		}
 
@@ -57,7 +59,7 @@ namespace Painter
 				GameObject go = Instantiate(ConstantEnviroment.Instance.PrefabInkScatter) as GameObject;
 				go.transform.position = contact.point;
 				var controller = go.GetComponent<InkScatterController>();
-				controller.SetColor(ConstantEnviroment.Instance.Group.GetColor(_Group));
+				controller.SetColor(ConstantEnviroment.Instance.Group.GetColor(Group));
 			}
 			Destroy(this.gameObject, 0.1f);
 		}

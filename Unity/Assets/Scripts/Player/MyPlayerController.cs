@@ -18,6 +18,8 @@ namespace Painter
 			get { return _WeaponAngle; }
 		}
 
+		private float _MoveDamper = 0.5f;
+
 		private static MyPlayerController _Instance;
 		public static MyPlayerController Instance
 		{
@@ -35,6 +37,8 @@ namespace Painter
 			DebugDialog.Instance.Initialize();
 
 			Weapon = transform.FindChild("Weapon").gameObject;
+
+			_Player.Group = GroupProperty.GROUP1;
 		}
 
 		public void SetID(int group, string id)
@@ -75,12 +79,29 @@ namespace Painter
 			NetworkManager.Instance.AddNotify(this);
 		}
 
+		void OnCollisionStay(Collision collision)
+		{
+			float goal = 0.5f;
+			foreach(var contact in collision.contacts)
+			{
+				GameObject o = contact.otherCollider.gameObject;
+				InkPlaneController plane = o.GetComponent<InkPlaneController>();
+				if (plane == null) continue;
+
+				int group = plane.CalclateGroup(contact.point);
+				if (group == 0) continue;
+
+				goal = (group == _Player.Group) ? 1f : 0.1f;
+			}
+			_MoveDamper = (_MoveDamper + goal) / 2.0f;
+		}
+
 		#region 移動
 		float _Velocity = 0;
 		float _Around = 0;
 		public void ActForward(float rate = 1)
 		{
-			_Velocity = _Player.ForwardRate * Mathf.Clamp(rate, 0, 1);
+			_Velocity = _Player.ForwardRate * Mathf.Clamp(rate, 0, 1) * _MoveDamper;
 		}
 		public void ActLeft(float rate = 1)
 		{
@@ -92,7 +113,7 @@ namespace Painter
 		}
 		public void ActBack(float rate = 1)
 		{
-			_Velocity = -_Player.BackRate * Mathf.Clamp(rate, 0, 1);
+			_Velocity = -_Player.BackRate * Mathf.Clamp(rate, 0, 1) * _MoveDamper;
 		}
 		#endregion
 
