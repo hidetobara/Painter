@@ -7,7 +7,7 @@ namespace Painter
 {
 	public class PlayerProperty
 	{
-		public int Group = 0;
+		public int Group;
 		public string ID = "Any";
 
 		public virtual float ForwardRate { get { return 0.15f; } }

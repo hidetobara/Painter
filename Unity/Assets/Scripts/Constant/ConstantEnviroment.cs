@@ -44,8 +44,8 @@ namespace Painter
 			PrefabInkScatter = Resources.Load(InkScatterName);
 			PrefabPlayer = Resources.Load(PlayerName);
 
-			FriendPlayer = new PlayerProperty();
-			EnemyPlayer = new PlayerProperty();
+			FriendPlayer = new PlayerProperty() { Group = 1 };
+			EnemyPlayer = new PlayerProperty() { Group = 2 };
 			MyWeapon = new WeaponProperty();
 			WeaponTable = new WeaponTable();
 			Network = new NetworkProperty();

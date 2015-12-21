@@ -30,6 +30,10 @@ namespace Painter
 		public virtual float StallTime { get { return 0.3f; } }
 		public virtual float BrokenTime { get { return 2.0f; } }
 		public virtual float Velocity { get { return 10.0f; } }
+
+		// Scatter
+		public virtual float ScatterVertical { get { return 2.0f; } }
+		public virtual float ScatterHorizontal { get { return 0.5f; } }
 	}
 
 	public class WeaponRifleProperty : WeaponProperty
@@ -41,5 +45,9 @@ namespace Painter
 		// Bullet
 		public override float BrokenTime { get { return 1.0f; } }
 		public override float Velocity { get { return 20.0f; } }
+
+		// Scatter
+		public virtual float ScatterVertical { get { return 0.0f; } }
+		public virtual float ScatterHorizontal { get { return 0.0f; } }
 	}
 }

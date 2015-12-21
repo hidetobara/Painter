@@ -124,13 +124,14 @@ namespace Painter
 			Rigidbody r = o.GetComponent<Rigidbody>();
 			o.transform.position = Weapon.transform.position + Weapon.transform.rotation * new Vector3(0, 0, 1);
 			o.transform.rotation = Weapon.transform.rotation;
-			r.velocity = o.transform.rotation * new Vector3(0, 0, _Weapon.Velocity);
+			r.velocity = o.transform.rotation * new Vector3(RandomSide(_Weapon.ScatterHorizontal), RandomSide(_Weapon.ScatterVertical), _Weapon.Velocity);
 
 			InkBallController controller = o.GetComponent<InkBallController>();
 			controller.Initialize(_Player.Group, _Weapon);
 
 			NetworkManager.Instance.AddNotify(controller);
 		}
+		float RandomSide(float v) { return Random.Range(-v, v); }
 
 		float _AttackInterval = 0;
 		bool _IsAttacking = false;
