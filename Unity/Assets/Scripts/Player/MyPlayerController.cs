@@ -30,15 +30,21 @@ namespace Painter
 			}
 		}
 
+		void Awake()
+		{
+			Weapon = transform.FindChild("Weapon").gameObject;
+		}
+
 		void Start()
 		{
+			// 固定設定
 			_Player = ConstantEnviroment.Instance.FriendPlayer;
 			_Weapon = ConstantEnviroment.Instance.MyWeapon;
-			DebugDialog.Instance.Initialize();
-
-			Weapon = transform.FindChild("Weapon").gameObject;
-
+			// グループ
 			_Player.Group = GroupProperty.GROUP1;
+			HubController.Get(_Player.Group).Restart(this);
+
+			DebugDialog.Instance.Initialize();
 		}
 
 		public void SetID(int group, string id)
