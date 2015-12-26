@@ -18,7 +18,7 @@ namespace Painter
 			get { return _WeaponAngle; }
 		}
 
-		private float _MoveDamper = 0.5f;
+		private PlayerMovement _Movement;
 
 		private static MyPlayerController _Instance;
 		public static MyPlayerController Instance
@@ -43,6 +43,8 @@ namespace Painter
 			// グループ
 			_Player.Group = GroupProperty.GROUP1;
 			HubController.Get(_Player.Group).Restart(this);
+			// 動き
+			_Movement = new PlayerMovement(_Player);
 
 			DebugDialog.Instance.Initialize();
 		}
@@ -56,16 +58,16 @@ namespace Painter
 
 		void Update()
 		{
+			_Movement.Update();
+
 			// Around
 			Vector3 angle = gameObject.transform.rotation.eulerAngles;
-			angle += new Vector3(0, _Around, 0);
+			angle += new Vector3(0, _Movement.GetAround(), 0);
 			gameObject.transform.rotation = Quaternion.Euler(angle);
-			_Around *= 0.75f;
 
 			// Move
-			Vector3 move = gameObject.transform.rotation * new Vector3(0, 0, _Velocity);
+			Vector3 move = gameObject.transform.rotation * new Vector3(_Movement.GetVelocitySide(), 0, _Movement.GetVelocityForward());
 			gameObject.transform.position += move;
-			_Velocity *= 0.8f;
 
 			// Camera
 			Vector3 target = gameObject.transform.position + Weapon.transform.rotation * _WeaponBias;
@@ -87,7 +89,7 @@ namespace Painter
 
 		void OnCollisionStay(Collision collision)
 		{
-			float goal = 0.5f;
+			int damp = 0;
 			foreach(var contact in collision.contacts)
 			{
 				GameObject o = contact.otherCollider.gameObject;
@@ -97,29 +99,30 @@ namespace Painter
 				int group = plane.CalclateGroup(contact.point);
 				if (group == 0) continue;
 
-				goal = (group == _Player.Group) ? 1f : 0.1f;
+				if (group == _Player.Group) damp++; else damp--;
 			}
-			_MoveDamper = (_MoveDamper + goal) / 2.0f;
+
+			if (damp < 0) _Movement.SetPlane(PlayerMovement.PlaneStatus.Enemies);
+			else if (damp > 0) _Movement.SetPlane(PlayerMovement.PlaneStatus.Friends);
+			else _Movement.SetPlane(PlayerMovement.PlaneStatus.None);
 		}
 
 		#region 移動
-		float _Velocity = 0;
-		float _Around = 0;
-		public void ActForward(float rate = 1)
+		public void MoveForward(float rate = 1)
 		{
-			_Velocity = _Player.ForwardRate * Mathf.Clamp(rate, 0, 1) * _MoveDamper;
+			_Movement.MoveForward(rate);
 		}
-		public void ActLeft(float rate = 1)
+		public void MoveBack(float rate = 1)
 		{
-			_Around = -_Player.AroundRate * Mathf.Clamp(rate, 0, 1);
+			_Movement.MoveBack(rate);
 		}
-		public void ActRight(float rate = 1)
+		public void TurnLeft(float rate = 1)
 		{
-			_Around = _Player.AroundRate * Mathf.Clamp(rate, 0, 1);
+			_Movement.TurnLeft(rate);
 		}
-		public void ActBack(float rate = 1)
+		public void TurnRight(float rate = 1)
 		{
-			_Velocity = -_Player.BackRate * Mathf.Clamp(rate, 0, 1) * _MoveDamper;
+			_Movement.TurnRight(rate);
 		}
 		#endregion
 

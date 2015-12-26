@@ -27,10 +27,10 @@ namespace Painter
 			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
 			player.WeaponAngle = _BufferWeaponAngle;
 
-			if (ax > 0.1f) player.ActRight(ax);
-			else if (ax < 0.1f) player.ActLeft(-ax);
+			if (ax > 0.1f) player.TurnRight(ax);
+			else if (ax < 0.1f) player.TurnLeft(-ax);
 #endif
-			if (_IsPressedMove) player.ActForward();
+			if (_IsPressedMove) player.MoveForward();
 		}
 
 		public void OnPressDownForAttack()

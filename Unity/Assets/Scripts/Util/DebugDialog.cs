@@ -54,10 +54,10 @@ namespace Painter
 		void OnGUI()
 		{
 			float size = 80;
-			if (GUI.Button(new Rect(size, 0, size, size), "FRWRD")) _MainPlayer.ActForward();
-			if (GUI.Button(new Rect(0, size, size, size), "LEFT")) _MainPlayer.ActLeft();
-			if (GUI.Button(new Rect(size * 2, size, size, size), "RIGHT")) _MainPlayer.ActRight();
-			if (GUI.Button(new Rect(size, size * 2, size, size), "BCK")) _MainPlayer.ActBack();
+			if (GUI.Button(new Rect(size, 0, size, size), "FRWRD")) _MainPlayer.MoveForward();
+			if (GUI.Button(new Rect(0, size, size, size), "LEFT")) _MainPlayer.TurnLeft();
+			if (GUI.Button(new Rect(size * 2, size, size, size), "RIGHT")) _MainPlayer.TurnRight();
+			if (GUI.Button(new Rect(size, size * 2, size, size), "BCK")) _MainPlayer.MoveBack();
 			if (GUI.Button(new Rect(size, size, size, size), "ATK")) _MainPlayer.ActAttack();
 		}
 
