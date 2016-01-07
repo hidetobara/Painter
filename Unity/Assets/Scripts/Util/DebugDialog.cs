@@ -46,9 +46,8 @@ namespace Painter
 
 		void Update()
 		{
-#if !UNITY_EDITOR
 			Print("Gyro=" + Input.acceleration + System.Environment.NewLine + Log.Instance.GetInfo());
-#endif
+			Log.Instance.Clear();
 		}
 
 		void OnGUI()
@@ -59,6 +58,8 @@ namespace Painter
 			if (GUI.Button(new Rect(size * 2, size, size, size), "RIGHT")) _MainPlayer.TurnRight();
 			if (GUI.Button(new Rect(size, size * 2, size, size), "BCK")) _MainPlayer.MoveBack();
 			if (GUI.Button(new Rect(size, size, size, size), "ATK")) _MainPlayer.ActAttack();
+
+			if (GUI.Button(new Rect(Screen.width - size, 0, size, size), "START")) _MainPlayer.BecomeStarting();
 		}
 
 		void Print(string s) { _Log.text = s; }

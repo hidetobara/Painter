@@ -6,12 +6,15 @@ namespace Painter
 {
 	public class PlayerMovement
 	{
-		public enum LifeStatus { Preparing, Staring, Playing }
+		public enum LifeStatus { Preparing, Starting, Playing }
 		public enum PlaneStatus { None, Friends, Enemies }
 		public enum WalkStatus { Stop, Walk, Acting }
 
+		const float STARTING_TIME_LIMIT = 3.0f;
+
 		private LifeStatus _Life = LifeStatus.Preparing;
-		public void SetStarting() { _Life = LifeStatus.Staring; }
+		private float _StartingTime = 0;
+		public void SetStarting() { _Life = LifeStatus.Starting; _StartingTime = 0; }
 		public void SetPlaying() { _Life = LifeStatus.Playing; }
 
 		private PlaneStatus _Plane = PlaneStatus.None;
@@ -24,6 +27,8 @@ namespace Painter
 		float _VelocityForward;
 		float _VelocitySide;
 		float _Around;
+
+		public string PrintStatus() { return _Life + " " + _Plane + " " + _Walk; }
 
 		public PlayerMovement(PlayerProperty property)
 		{
@@ -57,9 +62,12 @@ namespace Painter
 
 		public void Update()
 		{
-			if(_Life == LifeStatus.Preparing || _Life == LifeStatus.Staring)
+			if(_Life == LifeStatus.Preparing || _Life == LifeStatus.Starting)
 			{
+				if (_StartingTime > STARTING_TIME_LIMIT) _Life = LifeStatus.Playing;	// 開始する
+
 				Clear();
+				_StartingTime += Time.deltaTime;
 				return;
 			}
 
@@ -104,7 +112,7 @@ namespace Painter
 			}
 
 			// 状態更新
-			if(_VelocityForward < 0.01f && _VelocitySide < 0.01f)
+			if (IsFew(_VelocityForward) && IsFew(_VelocitySide) && IsFew(_Around))
 			{
 				Clear();
 			}
@@ -122,5 +130,7 @@ namespace Painter
 		{
 			return _Around;
 		}
+
+		private bool IsFew(float v) { return Mathf.Abs(v) < 0.01f; }
 	}
 }

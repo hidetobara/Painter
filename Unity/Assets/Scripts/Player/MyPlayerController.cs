@@ -14,11 +14,14 @@ namespace Painter
 		private Vector3 _WeaponAngle;
 		public Vector3 WeaponAngle
 		{
-			set { Weapon.transform.rotation = gameObject.transform.rotation; Weapon.transform.Rotate(value); }
+			set { _WeaponAngle = value; Weapon.transform.rotation = transform.rotation; Weapon.transform.Rotate(value); }
 			get { return _WeaponAngle; }
 		}
 
-		private PlayerMovement _Movement;
+		private PlayerMovement _PlayerMovement;
+		private AttackMovement _AttackMovement;
+
+		private Log _Log;
 
 		private static MyPlayerController _Instance;
 		public static MyPlayerController Instance
@@ -32,6 +35,7 @@ namespace Painter
 
 		void Awake()
 		{
+			_Log = Log.Instance;
 			Weapon = transform.FindChild("Weapon").gameObject;
 		}
 
@@ -44,7 +48,8 @@ namespace Painter
 			_Player.Group = GroupProperty.GROUP1;
 			HubController.Get(_Player.Group).Restart(this);
 			// 動き
-			_Movement = new PlayerMovement(_Player);
+			_PlayerMovement = new PlayerMovement(_Player);
+			_AttackMovement = new AttackMovement(_Weapon);
 
 			DebugDialog.Instance.Initialize();
 		}
@@ -54,19 +59,27 @@ namespace Painter
 			_Player.Group = group;
 			_Player.ID = id;
 			//gameObject.name = _Player.ID;
+
+			BecomeStarting();
+		}
+
+		public void BecomeStarting()
+		{
+			_PlayerMovement.SetStarting();
 		}
 
 		void Update()
 		{
-			_Movement.Update();
+			_PlayerMovement.Update();
+			_Log.AddInfo(_PlayerMovement.PrintStatus());
 
 			// Around
 			Vector3 angle = gameObject.transform.rotation.eulerAngles;
-			angle += new Vector3(0, _Movement.GetAround(), 0);
+			angle += new Vector3(0, _PlayerMovement.GetAround(), 0);
 			gameObject.transform.rotation = Quaternion.Euler(angle);
 
 			// Move
-			Vector3 move = gameObject.transform.rotation * new Vector3(_Movement.GetVelocitySide(), 0, _Movement.GetVelocityForward());
+			Vector3 move = gameObject.transform.rotation * new Vector3(_PlayerMovement.GetVelocitySide(), 0, _PlayerMovement.GetVelocityForward());
 			gameObject.transform.position += move;
 
 			// Camera
@@ -75,13 +88,10 @@ namespace Painter
 			MainCamera.transform.LookAt(target);
 
 			// Attack
-			if(_IsAttacking && _AttackInterval > _Weapon.Interval)
-			{
-				ActAttack();
-				_AttackInterval = 0;
-			}
-			_AttackInterval += Time.deltaTime;
-			WeaponAngle *= 0.9f;
+			_AttackMovement.Update();
+			float fire = _AttackMovement.Fire();
+			if (fire > 0) ActAttack();
+			WeaponPanel.Instance.Value = _AttackMovement.EnergyRate;
 
 			// Network
 			NetworkManager.Instance.AddNotify(this);
@@ -93,36 +103,43 @@ namespace Painter
 			foreach(var contact in collision.contacts)
 			{
 				GameObject o = contact.otherCollider.gameObject;
-				InkPlaneController plane = o.GetComponent<InkPlaneController>();
-				if (plane == null) continue;
-
-				int group = plane.CalclateGroup(contact.point);
-				if (group == 0) continue;
-
-				if (group == _Player.Group) damp++; else damp--;
+				InkPlaneController ink = o.GetComponent<InkPlaneController>();
+				if (ink != null)
+				{
+					int group = ink.CalclateGroup(contact.point);
+					if (group > 0)
+					{
+						if (group == _Player.Group) damp++; else damp--;
+					}
+				}
+				DeathPlaneController death = o.GetComponent<DeathPlaneController>();
+				if(death != null)
+				{
+					BecomeStarting();
+					HubController.Get(_Player.Group).Restart(this);
+				}
 			}
-
-			if (damp < 0) _Movement.SetPlane(PlayerMovement.PlaneStatus.Enemies);
-			else if (damp > 0) _Movement.SetPlane(PlayerMovement.PlaneStatus.Friends);
-			else _Movement.SetPlane(PlayerMovement.PlaneStatus.None);
+			if (damp < 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Enemies);
+			else if (damp > 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Friends);
+			else _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.None);
 		}
 
 		#region 移動
 		public void MoveForward(float rate = 1)
 		{
-			_Movement.MoveForward(rate);
+			_PlayerMovement.MoveForward(rate);
 		}
 		public void MoveBack(float rate = 1)
 		{
-			_Movement.MoveBack(rate);
+			_PlayerMovement.MoveBack(rate);
 		}
 		public void TurnLeft(float rate = 1)
 		{
-			_Movement.TurnLeft(rate);
+			_PlayerMovement.TurnLeft(rate);
 		}
 		public void TurnRight(float rate = 1)
 		{
-			_Movement.TurnRight(rate);
+			_PlayerMovement.TurnRight(rate);
 		}
 		#endregion
 
@@ -142,15 +159,13 @@ namespace Painter
 		}
 		float RandomSide(float v) { return Random.Range(-v, v); }
 
-		float _AttackInterval = 0;
-		bool _IsAttacking = false;
 		public void ActAttackStart()
 		{
-			_IsAttacking = true;
+			_AttackMovement.On();
 		}
 		public void ActAttackEnd()
 		{
-			_IsAttacking = false;
+			_AttackMovement.Off();
 		}
 		#endregion
 	}
