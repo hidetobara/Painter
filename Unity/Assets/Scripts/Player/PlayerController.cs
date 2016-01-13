@@ -43,7 +43,7 @@ namespace Painter
 		}
 		public SyncPlayer Send()
 		{
-			return new SyncPlayer() { Id = _Player.ID, Position = transform.position, Rotation = transform.rotation };
+			return new SyncPlayer() { Id = _Player.ID, Group = _Player.Group, Position = transform.position, Rotation = transform.rotation };
 		}
 	}
 }

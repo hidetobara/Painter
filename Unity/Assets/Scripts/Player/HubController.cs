@@ -25,7 +25,7 @@ namespace Painter
 		void Start()
 		{
 			Renderer render = GetComponent<Renderer>();
-			render.material.color = ConstantEnviroment.Instance.Group.GetColor(Group); Debug.Log(render.material.color);
+			render.material.color = ConstantEnviroment.Instance.Group.GetColor(Group);
 		}
 
 		public void Restart(PlayerController player)

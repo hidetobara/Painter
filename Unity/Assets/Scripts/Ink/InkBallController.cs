@@ -67,7 +67,7 @@ namespace Painter
 		public SyncBall Send()
 		{
 			Rigidbody r = this.GetComponent<Rigidbody>();
-			return new SyncBall() { Type = _Weapon.Name, Position = this.transform.position, Rotation = this.transform.rotation, Velocity = r.velocity };
+			return new SyncBall() { Group = this.Group, Type = _Weapon.Name, Position = this.transform.position, Rotation = this.transform.rotation, Velocity = r.velocity };
 		}
 	}
 }

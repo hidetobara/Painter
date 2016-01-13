@@ -1,4 +1,4 @@
-﻿#define STAGING
+﻿//#define STAGING
 using UnityEngine;
 using System.Collections;
 using Painter.Site;

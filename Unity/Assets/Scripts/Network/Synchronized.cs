@@ -24,6 +24,7 @@ namespace Painter
 
 		public static string MyId;
 		public string Id;
+		public string ShortId { get { return Id.Substring(0, 4); } }
 		public int Group;
 		public int Time;
 

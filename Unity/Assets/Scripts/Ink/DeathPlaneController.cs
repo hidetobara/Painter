@@ -8,7 +8,7 @@ namespace Painter
 	{
 		void Start()
 		{
-
+			 
 		}
 	}
 }

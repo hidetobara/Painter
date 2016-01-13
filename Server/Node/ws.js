@@ -1,4 +1,5 @@
 ﻿var http = require('http');
+var fs = require('fs');
 var WSServer = require('websocket').server;
 var plainHttpServer = http.createServer(function(req, res) {
 	res.writeHead(200, { 'Content-Type': 'text/html'});
@@ -17,12 +18,13 @@ webSocketServer.on('request', function (req) {
 	_connections[req.key] = websocket;
 	console.log(getPassedString() + " key=" + req.key + ",connecttions=" + count(_connections));
 	var start = new Object();
+	var group = 1;
+	var history = [];
 	start.TIME = getPassedTime();
-	start.DATA = { nam:"sta", sta:"accept", grp:0, id:req.key };
+	start.DATA = { nam:"sta", sta:"accept", grp:group, id:req.key };
 	websocket.send(JSON.stringify(start));
 
 	websocket.on('message', function(msg) {
-		//console.log('"' + msg + '" is recieved from ' + req.origin + '!');
 		//dump(req.key + ">>" + msg.binaryData);
 		var list = JSON.parse(msg.binaryData);
 		for(var i in list)
@@ -31,6 +33,7 @@ webSocketServer.on('request', function (req) {
 			obj.TIME = getPassedTime();
 			obj.DATA = list[i];
 			_syncs.push(obj);
+			history.push(obj);
 		}
 		//broadcast(msg.binaryData);	// まとめて送信するので不要
 	});
@@ -38,6 +41,7 @@ webSocketServer.on('request', function (req) {
 	websocket.on('close', function (code,desc) {
 		console.log(req.key + '>disconnected');
 		delete _connections[req.key];
+		fs.writeFile("../history/" + group + "-" + getRandom(10) + ".txt", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
 	});
 });
 
@@ -56,6 +60,9 @@ function getPassedTime(){
 }
 function getPassedString(){
 	return "#" + getPassedTime() + "\t";
+}
+function getRandom(range){
+	return new Date().getTime() % range;
 }
 
 function broadcast(message){

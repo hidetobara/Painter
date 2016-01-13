@@ -8,20 +8,20 @@ namespace Painter
 	{
 		public enum LifeStatus { Preparing, Starting, Playing }
 		public enum PlaneStatus { None, Friends, Enemies }
-		public enum WalkStatus { Stop, Walk, Acting }
+		public enum ActStatus { None, Attacking }
 
 		const float STARTING_TIME_LIMIT = 3.0f;
 
 		private LifeStatus _Life = LifeStatus.Preparing;
 		private float _StartingTime = 0;
-		public void SetStarting() { _Life = LifeStatus.Starting; _StartingTime = 0; }
-		public void SetPlaying() { _Life = LifeStatus.Playing; }
+		public void BecomeStarting() { _Life = LifeStatus.Starting; _StartingTime = 0; }
+		public void BecomePlaying() { _Life = LifeStatus.Playing; }
 
 		private PlaneStatus _Plane = PlaneStatus.None;
 		public void SetPlane(PlaneStatus s) { _Plane = s; }
 
-		private WalkStatus _Walk;
-		public void SetWalk(WalkStatus s) { _Walk = s; }
+		private ActStatus _Walk;
+		public void SetAct(ActStatus s) { _Walk = s; }
 
 		PlayerProperty _Property;
 		float _VelocityForward;
@@ -79,7 +79,7 @@ namespace Painter
 			_VelocityForward = 0;
 			_VelocitySide = 0;
 			_Around = 0;
-			_Walk = WalkStatus.Stop;
+			_Walk = ActStatus.None;
 		}
 
 		private void Damp()
@@ -105,7 +105,7 @@ namespace Painter
 			}
 
 			// 行動による影響
-			if(_Walk == WalkStatus.Acting)
+			if(_Walk == ActStatus.Attacking)
 			{
 				_VelocityForward *= 0.75f;
 				_VelocitySide *= 0.75f;

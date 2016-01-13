@@ -65,7 +65,7 @@ namespace Painter
 
 		public void BecomeStarting()
 		{
-			_PlayerMovement.SetStarting();
+			_PlayerMovement.BecomeStarting();
 		}
 
 		void Update()
@@ -162,10 +162,12 @@ namespace Painter
 		public void ActAttackStart()
 		{
 			_AttackMovement.On();
+			_PlayerMovement.SetAct(PlayerMovement.ActStatus.Attacking);
 		}
 		public void ActAttackEnd()
 		{
 			_AttackMovement.Off();
+			_PlayerMovement.SetAct(PlayerMovement.ActStatus.None);
 		}
 		#endregion
 	}

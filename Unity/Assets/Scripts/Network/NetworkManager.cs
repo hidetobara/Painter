@@ -61,8 +61,8 @@ namespace Painter
 					if (status.Status == NetworkStatus.Accept)
 					{
 						// サーバーと接続できた時
-						Synchronized.MyId = status.Id;	// 自分IDを登録
-						MyPlayerController.Instance.SetID(status.Group, status.Id);	// 自分IDを登録
+						Synchronized.MyId = status.ShortId;	// 自分IDを登録
+						MyPlayerController.Instance.SetID(status.Group, status.ShortId);	// 自分IDを登録
 						_StartTime = status.Time;	// 始まった時間
 						_WebSocket = socket;	// ソケット登録
 						Debug.Log("MyId=" + Synchronized.MyId + " Time=" + _StartTime);
