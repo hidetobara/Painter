@@ -10,3 +10,5 @@ Unity/android
 
 Server/history
 
+.idea
+*.log

@@ -10,13 +10,17 @@ var webSocketServer = new WSServer({httpServer: plainHttpServer});
 var _start = 0;
 var _connections = {};
 var _syncs = [];
+var _historys = [];
+loadHistory(1, 0);
 
-console.log(getPassedString() + " Now waiting sockets.");
+console.log("# Now waiting sockets.");
 
 webSocketServer.on('request', function (req) {
 	var websocket = req.accept(null, req.origin);
+	var count = countKeys(_connections);
+	if(count == 0) resetPassedTime();
+	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
 	_connections[req.key] = websocket;
-	console.log(getPassedString() + " key=" + req.key + ",connecttions=" + count(_connections));
 	var start = new Object();
 	var group = 1;
 	var history = [];
@@ -41,7 +45,7 @@ webSocketServer.on('request', function (req) {
 	websocket.on('close', function (code,desc) {
 		console.log(req.key + '>disconnected');
 		delete _connections[req.key];
-		fs.writeFile("../history/" + group + "-" + getRandom(10) + ".txt", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
+		saveHistory(group, getRandom(10), history);
 	});
 });
 
@@ -49,13 +53,14 @@ function dump(obj){
 	if(typeof obj === 'string' || typeof obj === 'number'){ console.log(obj); return; }
 	for(var i in obj) console.log("\t" + i + "=" + obj[i]);
 }
-function count(obj){
+function countKeys(obj){
 	var cnt = 0;
 	for(var i in obj) cnt++;
 	return cnt;
 }
+function resetPassedTime(){ _start = new Date().getTime(); dump("# reset-time=" + _start); }
 function getPassedTime(){
-	if(_start == 0){ _start = new Date().getTime(); }
+	if(_start == 0) resetPassedTime();
 	return new Date().getTime() - _start;
 }
 function getPassedString(){
@@ -64,13 +69,43 @@ function getPassedString(){
 function getRandom(range){
 	return new Date().getTime() % range;
 }
+function saveHistory(group, index, history){
+	var start =  history[0].TIME;
+	for(var i = 0; i < history.length; i++) history[i].TIME -= start;
+    fs.writeFile("../history/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
+}
+function loadHistory(group, index){
+    fs.readFile("../history/" + group + "/" + index + ".log",
+        function(err, data) {
+            if(err) throw err;
+            var list = JSON.parse(data);
+            var current = getPassedTime();
+            for(var i = 0; i < list.length; i++) list[i].TIME += current;
+            _historys.push(list);
+			dump("## length=" + list.length);
+        }
+    );
+}
+function updateHistory(){
+	var current = getPassedTime();
+    for(var i in _historys){
+        var history = _historys[i];
+		if(history.length == 0){ dump("# history=" + _historys.length); delete _historys[i]; continue; }
+        for(var j in history){
+        	if(history[j].TIME > current) break;
+			_syncs.push((history[j]));
+			delete history[j];
+        }
+    }
+}
 
+// Broadcasting
 function broadcast(message){
 	for(var i in _connections) _connections[i].send(message);
 }
 function broadcasting(){
+	updateHistory();
 	if(_syncs.length == 0) return;
-	//dump(JSON.stringify(_syncs));
 	broadcast(JSON.stringify(_syncs));
 	_syncs = [];
 }
