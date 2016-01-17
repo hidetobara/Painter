@@ -46,8 +46,10 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 col = tex2D(_MainTex, i.uv0);
-				float theta = sin( i.uv1.x * 3 ) * sin( i.uv1.y * 4 );
-				if(i.uv1.z > 1 - theta * theta * 0.9){ col = _FriendColor; }
+				float theta1 = sin( i.uv1.x * 3 ) * sin( i.uv1.y * 5 );
+				float theta2 = sin( i.uv1.x * 5 ) * sin( i.uv1.y * 3 );
+				if(i.uv1.z > 1 - theta1 * theta1 * 0.9){ col = _FriendColor; }
+				else if(i.uv1.w > i.uv1.z && i.uv1.w > 1 - theta2 * theta2 * 0.9){ col = _EnemyColor; }
 				return col;
 			}
 			ENDCG

@@ -11,18 +11,21 @@ var _start = 0;
 var _connections = {};
 var _syncs = [];
 var _historys = [];
-loadHistory(1, 0);
 
 console.log("# Now waiting sockets.");
 
 webSocketServer.on('request', function (req) {
 	var websocket = req.accept(null, req.origin);
 	var count = countKeys(_connections);
-	if(count == 0) resetPassedTime();
+	if(count == 0){
+		resetPassedTime();
+		loadHistory(1, 0);
+		loadHistory(2, 0);
+	}
 	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
 	_connections[req.key] = websocket;
 	var start = new Object();
-	var group = 1;
+	var group = 2;
 	var history = [];
 	start.TIME = getPassedTime();
 	start.DATA = { nam:"sta", sta:"accept", grp:group, id:req.key };

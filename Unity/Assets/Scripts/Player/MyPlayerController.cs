@@ -44,9 +44,6 @@ namespace Painter
 			// 固定設定
 			_Player = ConstantEnviroment.Instance.FriendPlayer;
 			_Weapon = ConstantEnviroment.Instance.MyWeapon;
-			// グループ
-			_Player.Group = GroupProperty.GROUP1;
-			HubController.Get(_Player.Group).Restart(this);
 			// 動き
 			_PlayerMovement = new PlayerMovement(_Player);
 			_AttackMovement = new AttackMovement(_Weapon);
@@ -58,9 +55,9 @@ namespace Painter
 		{
 			_Player.Group = group;
 			_Player.ID = id;
-			//gameObject.name = _Player.ID;
 
 			BecomeStarting();
+			HubController.Get(_Player.Group).Restart(this);
 		}
 
 		public void BecomeStarting()
