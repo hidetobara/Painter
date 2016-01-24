@@ -25,7 +25,7 @@ webSocketServer.on('request', function (req) {
 	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
 	_connections[req.key] = websocket;
 	var start = new Object();
-	var group = 2;
+	var group = 1 + getRandom(2);
 	var history = [];
 	start.TIME = getPassedTime();
 	start.DATA = { nam:"sta", sta:"accept", grp:group, id:req.key };
@@ -70,7 +70,7 @@ function getPassedString(){
 	return "#" + getPassedTime() + "\t";
 }
 function getRandom(range){
-	return new Date().getTime() % range;
+	return Math.floor( Math.random() * range );
 }
 function saveHistory(group, index, history){
 	var start =  history[0].TIME;
