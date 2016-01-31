@@ -16,6 +16,7 @@ namespace Painter
 		private float _StartingTime = 0;
 		public void BecomeStarting() { _Life = LifeStatus.Starting; _StartingTime = 0; }
 		public void BecomePlaying() { _Life = LifeStatus.Playing; }
+		public bool IsPlaying() { return _Life == LifeStatus.Playing; }
 
 		private PlaneStatus _Plane = PlaneStatus.None;
 		public void SetPlane(PlaneStatus s) { _Plane = s; }
@@ -93,13 +94,9 @@ namespace Painter
 					_Around *= 0.5f;
 					break;
 				case PlaneStatus.Friends:
-					_VelocityForward *= 0.8f;
-					_VelocitySide *= 0.8f;
-					_Around *= 0.8f;
-					break;
 				default:
-					_VelocityForward *= 0.5f;
-					_VelocitySide *= 0.5f;
+					_VelocityForward *= 0.75f;
+					_VelocitySide *= 0.75f;
 					_Around *= 0.8f;
 					break;
 			}

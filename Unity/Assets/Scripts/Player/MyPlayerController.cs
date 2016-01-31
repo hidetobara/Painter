@@ -33,6 +33,8 @@ namespace Painter
 			}
 		}
 
+		public int Group { get { return _Player.Group; } }
+
 		void Awake()
 		{
 			_Log = Log.Instance;
@@ -53,7 +55,7 @@ namespace Painter
 
 		public void SetID(int group, string id)
 		{
-			_Player.Group = group;
+			if (_Player.Group == 0) _Player.Group = group;
 			_Player.ID = id;
 
 			BecomeStarting();
@@ -96,10 +98,14 @@ namespace Painter
 
 		void OnCollisionStay(Collision collision)
 		{
+			if (!_PlayerMovement.IsPlaying()) return;
+
 			int damp = 0;
+			bool isDead = false;
 			foreach(var contact in collision.contacts)
 			{
 				GameObject o = contact.otherCollider.gameObject;
+				// 移動判定
 				InkPlaneController ink = o.GetComponent<InkPlaneController>();
 				if (ink != null)
 				{
@@ -109,16 +115,21 @@ namespace Painter
 						if (group == _Player.Group) damp++; else damp--;
 					}
 				}
+				// 死亡判定
 				DeathPlaneController death = o.GetComponent<DeathPlaneController>();
-				if(death != null)
-				{
-					BecomeStarting();
-					HubController.Get(_Player.Group).Restart(this);
-				}
+				if (death != null) isDead = true;
 			}
+
 			if (damp < 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Enemies);
 			else if (damp > 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Friends);
 			else _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.None);
+
+			if(isDead)
+			{
+				BecomeStarting();
+				NetworkManager.Instance.AddStatus(NetworkStatus.Dead);
+				HubController.Get(_Player.Group).Restart(this);
+			}
 		}
 
 		#region 移動

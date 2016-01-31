@@ -40,7 +40,7 @@ namespace Painter
 
 	public class WeaponRifleProperty : WeaponProperty
 	{
-		public virtual string Name { get { return "rifle"; } }
+		public override string Name { get { return "rifle"; } }
 		// Attack
 		public override float ChargeMax { get { return 5.1f; } }
 
@@ -49,7 +49,7 @@ namespace Painter
 		public override float Velocity { get { return 20.0f; } }
 
 		// Scatter
-		public virtual float ScatterVertical { get { return 0.0f; } }
-		public virtual float ScatterHorizontal { get { return 0.0f; } }
+		public override float ScatterVertical { get { return 0.0f; } }
+		public override float ScatterHorizontal { get { return 0.0f; } }
 	}
 }

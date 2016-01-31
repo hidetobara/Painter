@@ -41,12 +41,17 @@ webSocketServer.on('request', function (req) {
 			obj.DATA = list[i];
 			_syncs.push(obj);
 			history.push(obj);
+			if(obj.DATA.nam == "sta" && obj.DATA.sta == "dead"){
+				console.log(req.key + '[dead]');
+				if(history.length > 100) saveHistory(group, getRandom(10), history);
+				history = [];
+			}
 		}
 		//broadcast(msg.binaryData);	// まとめて送信するので不要
 	});
 
 	websocket.on('close', function (code,desc) {
-		console.log(req.key + '>disconnected');
+		console.log(req.key + '[disconnected]');
 		delete _connections[req.key];
 		saveHistory(group, getRandom(10), history);
 	});
@@ -76,6 +81,7 @@ function saveHistory(group, index, history){
 	var start =  history[0].TIME;
 	for(var i = 0; i < history.length; i++) history[i].TIME -= start;
     fs.writeFile("../history/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
+	dump("[history] save=" + group + "/" + index);
 }
 function loadHistory(group, index){
     fs.readFile("../history/" + group + "/" + index + ".log",
@@ -85,7 +91,7 @@ function loadHistory(group, index){
             var current = getPassedTime();
             for(var i = 0; i < list.length; i++) list[i].TIME += current;
             _historys.push(list);
-			dump("## length=" + list.length);
+			dump("[history] load=" + group + "/" + index);
         }
     );
 }

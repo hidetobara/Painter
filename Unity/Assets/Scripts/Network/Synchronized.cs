@@ -8,7 +8,7 @@ namespace Painter
 {
 	using JsonHash = Dictionary<string, object>;
 	using JsonList = List<object>;
-	public enum NetworkStatus { None, Joining, Accept, Update, End }
+	public enum NetworkStatus { None, Joining, Accept, Update, Dead, End }
 
 	public class Synchronized
 	{

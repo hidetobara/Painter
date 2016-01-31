@@ -36,15 +36,15 @@ namespace Painter
 
 		void Start()
 		{
-			StartCoroutine(Starting());
+			StartCoroutine(Connecting());
 		}
-		IEnumerator Starting()
+		IEnumerator Connecting()
 		{
-			Debug.Log("Connecting:" + ConstantEnviroment.Instance.Network.Address);
+			Debug.Log("[Connecting] IP=" + ConstantEnviroment.Instance.Network.Address + " Group=" + MyPlayerController.Instance.Group);
 			var socket = new WebSocket(new Uri(ConstantEnviroment.Instance.Network.Address));
 			yield return StartCoroutine(socket.Connect());
 
-			JsonHash hash = new SyncStatus() { Status = NetworkStatus.Joining }.ToHash();
+			JsonHash hash = new SyncStatus() { Group = MyPlayerController.Instance.Group, Status = NetworkStatus.Joining }.ToHash();
 			socket.SendString(Json.Serialize(new JsonList() { hash }));
 
 			while (true)
@@ -65,7 +65,7 @@ namespace Painter
 						MyPlayerController.Instance.SetID(status.Group, status.ShortId);	// 自分IDを登録
 						_StartTime = status.Time;	// 始まった時間
 						_WebSocket = socket;	// ソケット登録
-						Debug.Log("MyId=" + Synchronized.MyId + " Time=" + _StartTime);
+						Debug.Log("[Connected] ID=" + Synchronized.MyId + " Time=" + _StartTime);
 						yield break;
 					}
 				}
@@ -97,6 +97,10 @@ namespace Painter
 			Synchronize();
 		}
 
+		public void AddStatus(NetworkStatus status)
+		{
+			_SendingQueue.Add(new SyncStatus() { Status = status });
+		}
 		public void AddNotify(PlayerController controller)
 		{
 			_SendingQueue.Add(controller.Send());
