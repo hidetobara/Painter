@@ -115,15 +115,14 @@ namespace Painter
 						if (group == _Player.Group) damp++; else damp--;
 					}
 				}
-				// 死亡判定
 				DeathPlaneController death = o.GetComponent<DeathPlaneController>();
 				if (death != null) isDead = true;
 			}
-
+			// 移動判定
 			if (damp < 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Enemies);
 			else if (damp > 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Friends);
 			else _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.None);
-
+			// 死亡判定
 			if(isDead)
 			{
 				BecomeStarting();

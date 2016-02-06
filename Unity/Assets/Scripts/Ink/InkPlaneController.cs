@@ -61,15 +61,15 @@ namespace Painter
 				float w = v.w;
 				if (group == GroupProperty.GROUP1)
 				{
-					z += 0.15f;
+					z += 0.2f;
 					if (z > 1) z = 1;
-					w -= 0.01f;
+					if (w == 1) w = 0.99f;
 				}
 				if(group == GroupProperty.GROUP2)
 				{
-					w += 0.15f;
+					w += 0.2f;
 					if (w > 1) w = 1;
-					z -= 0.01f;
+					if (z == 1) z = 0.99f;
 				}
 				_Inks[index] = new Vector4(v.x, v.y, z, w);
 			}

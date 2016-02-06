@@ -3,8 +3,8 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		_FriendColor ("Friend", Color) = (1, 0, 0, 1)
-		_EnemyColor ("Enemy", Color) = (0, 1, 0, 1)
+		_FriendColor ("Friend", Color) = (1, 0, 0, 0)
+		_EnemyColor ("Enemy", Color) = (0, 1, 0, 0)
 	}
 	SubShader
 	{
@@ -49,6 +49,8 @@
 				fixed4 col = tex2D(_MainTex, i.uv0);
 				float theta1 = sin( i.uv1.x * 3 ) + sin( i.uv1.y * 5 );
 				float theta2 = sin( i.uv1.x * 5 ) + sin( i.uv1.y * 3 );
+				if(_FriendColor.a == 0 && _EnemyColor.a == 0) return col;
+
 				if(i.uv1.w > i.uv1.z)
 				{
 					if(i.uv1.z > 1 - theta1 * theta1 * SCALE){ col = _FriendColor; }
