@@ -65,7 +65,7 @@ namespace Painter
 						MyPlayerController.Instance.SetID(status.Group, status.ShortId);	// 自分IDを登録
 						_StartTime = status.Time;	// 始まった時間
 						_WebSocket = socket;	// ソケット登録
-						Debug.Log("[Connected] ID=" + Synchronized.MyId + " Time=" + _StartTime);
+						Debug.Log("[Connected] Group=" + status.Group + " ID=" + Synchronized.MyId + " Time=" + _StartTime);
 						yield break;
 					}
 				}

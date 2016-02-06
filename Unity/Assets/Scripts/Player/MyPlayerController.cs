@@ -19,7 +19,9 @@ namespace Painter
 		}
 
 		private PlayerMovement _PlayerMovement;
-		private AttackMovement _AttackMovement;
+		//private AttackMovement _AttackMovement;
+		private InkMovement _InkMovement;
+		bool _IsAttacking = false;
 
 		private Log _Log;
 
@@ -44,18 +46,19 @@ namespace Painter
 		void Start()
 		{
 			// 固定設定
-			_Player = ConstantEnviroment.Instance.FriendPlayer;
+			_Player = new PlayerProperty();
 			_Weapon = ConstantEnviroment.Instance.MyWeapon;
 			// 動き
 			_PlayerMovement = new PlayerMovement(_Player);
-			_AttackMovement = new AttackMovement(_Weapon);
+			// インク
+			_InkMovement = new InkMovement(_Weapon);
 
 			DebugDialog.Instance.Initialize();
 		}
 
 		public void SetID(int group, string id)
 		{
-			if (_Player.Group == 0) _Player.Group = group;
+			_Player.Group = group;
 			_Player.ID = id;
 
 			BecomeStarting();
@@ -65,6 +68,7 @@ namespace Painter
 		public void BecomeStarting()
 		{
 			_PlayerMovement.BecomeStarting();
+			_InkMovement.Reset();
 		}
 
 		void Update()
@@ -87,11 +91,11 @@ namespace Painter
 			MainCamera.transform.LookAt(target);
 
 			// Attack
-			_AttackMovement.Update();
-			float fire = _AttackMovement.Fire();
+			_InkMovement.Update();
+			float fire = 0;
+			if (_IsAttacking) fire = _InkMovement.Fire();
 			if (fire > 0) ActAttack();
-			WeaponPanel.Instance.Value = _AttackMovement.EnergyRate;
-
+			WeaponPanel.Instance.Value = _InkMovement.EnergyRate;
 			// Network
 			NetworkManager.Instance.AddNotify(this);
 		}
@@ -119,10 +123,12 @@ namespace Painter
 				if (death != null) isDead = true;
 			}
 			// 移動判定
-			if (damp < 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Enemies);
-			else if (damp > 0) _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.Friends);
-			else _PlayerMovement.SetPlane(PlayerMovement.PlaneStatus.None);
+			PlaneStatus plane = PlaneStatus.None;
+			if (damp < 0) plane = PlaneStatus.Enemies; else if (damp > 0) plane = PlaneStatus.Friends;
+			_PlayerMovement.SetPlane(plane);
+			_InkMovement.SetPlane(plane);			
 			// 死亡判定
+			if (_InkMovement.IsDead) isDead = true;	// ここは良くないが・・
 			if(isDead)
 			{
 				BecomeStarting();
@@ -168,13 +174,13 @@ namespace Painter
 
 		public void ActAttackStart()
 		{
-			_AttackMovement.On();
-			_PlayerMovement.SetAct(PlayerMovement.ActStatus.Attacking);
+			_IsAttacking = true;
+			_PlayerMovement.SetAct(ActStatus.Attacking);
 		}
 		public void ActAttackEnd()
 		{
-			_AttackMovement.Off();
-			_PlayerMovement.SetAct(PlayerMovement.ActStatus.None);
+			_IsAttacking = false;
+			_PlayerMovement.SetAct(ActStatus.None);
 		}
 		#endregion
 	}

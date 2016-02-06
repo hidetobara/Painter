@@ -4,12 +4,12 @@ using System.Collections;
 
 namespace Painter
 {
+	public enum LifeStatus { Preparing, Starting, Playing }
+	public enum PlaneStatus { None, Friends, Enemies }
+	public enum ActStatus { None, Attacking }
+
 	public class PlayerMovement
 	{
-		public enum LifeStatus { Preparing, Starting, Playing }
-		public enum PlaneStatus { None, Friends, Enemies }
-		public enum ActStatus { None, Attacking }
-
 		const float STARTING_TIME_LIMIT = 3.0f;
 
 		private LifeStatus _Life = LifeStatus.Preparing;

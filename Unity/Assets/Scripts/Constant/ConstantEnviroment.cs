@@ -1,4 +1,4 @@
-﻿//#define STAGING
+﻿#define STAGING
 using UnityEngine;
 using System.Collections;
 using Painter.Site;
@@ -15,8 +15,6 @@ namespace Painter
 		public UnityEngine.Object PrefabInkScatter { get; private set; }
 		public UnityEngine.Object PrefabPlayer { get; private set; }
 
-		public PlayerProperty FriendPlayer { get; private set; }
-		public PlayerProperty EnemyPlayer { get; private set; }
 		public WeaponProperty MyWeapon { get; private set; }
 		public WeaponTable WeaponTable { get; private set; }
 		public NetworkProperty Network { get; private set; }
@@ -44,8 +42,6 @@ namespace Painter
 			PrefabInkScatter = Resources.Load(InkScatterName);
 			PrefabPlayer = Resources.Load(PlayerName);
 
-			FriendPlayer = new PlayerProperty() { Group = 1 };
-			EnemyPlayer = new PlayerProperty() { Group = 2 };
 			MyWeapon = new WeaponProperty();
 			WeaponTable = new WeaponTable();
 			Network = new NetworkProperty();
@@ -55,7 +51,7 @@ namespace Painter
 #endif
 		}
 
-		public Color FriendColor { get { return Group.GetColor(FriendPlayer.Group); } }
-		public Color EnemyColor { get { return Group.GetColor(EnemyPlayer.Group); } }
+		public Color Color1 { get { return Group.GetColor(1); } }
+		public Color Color2 { get { return Group.GetColor(2); } }
 	}
 }

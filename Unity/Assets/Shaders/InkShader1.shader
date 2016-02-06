@@ -3,8 +3,8 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		_FriendColor ("Friend", Color) = (1, 0, 0, 0)
-		_EnemyColor ("Enemy", Color) = (0, 1, 0, 0)
+		_Color1 ("Color1", Color) = (1, 0, 0, 0)
+		_Color2 ("Color2", Color) = (0, 1, 0, 0)
 	}
 	SubShader
 	{
@@ -48,8 +48,8 @@
 			}
 			
 			sampler2D _MainTex;
-			fixed4 _FriendColor;
-			fixed4 _EnemyColor;
+			fixed4 _Color1;
+			fixed4 _Color2;
 
 			fixed4 frag (v2f i) : SV_Target
 			{
@@ -60,17 +60,17 @@
 				theta1 = theta1 * theta1;
 				theta2 = theta2 * theta2;
 				float4 lighten = i.normal;
-				if(_FriendColor.a == 0 && _EnemyColor.a == 0) return col;
+				if(_Color1.a == 0 && _Color2.a == 0) return col;
 
 				if(i.uv1.w > i.uv1.z)
 				{
-					if(i.uv1.z > 1 - theta1 * SCALE){ col = _FriendColor + lighten; }
-					if(i.uv1.w > 1 - theta2 * SCALE){ col = _EnemyColor + lighten; }
+					if(i.uv1.z > 1 - theta1 * SCALE){ col = _Color1 + lighten; }
+					if(i.uv1.w > 1 - theta2 * SCALE){ col = _Color2 + lighten; }
 				}
 				else
 				{
-					if(i.uv1.w > 1 - theta2 * SCALE){ col = _EnemyColor + lighten; }
-					if(i.uv1.z > 1 - theta1 * SCALE){ col = _FriendColor + lighten; }
+					if(i.uv1.w > 1 - theta2 * SCALE){ col = _Color2 + lighten; }
+					if(i.uv1.z > 1 - theta1 * SCALE){ col = _Color1 + lighten; }
 				}
 				return col;
 			}

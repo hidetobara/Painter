@@ -20,7 +20,7 @@ namespace Painter
 				case 2:
 					return new Color(0.5f, 0.9f, 0.9f);
 				default:
-					return new Color(0.9f, 0.9f, 0.5f);
+					return new Color(0.5f, 0.5f, 0.5f);
 			}
 		}
 	}

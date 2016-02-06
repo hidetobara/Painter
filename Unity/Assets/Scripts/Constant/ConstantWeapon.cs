@@ -24,9 +24,9 @@ namespace Painter
 	{
 		public virtual string Name { get { return "gun"; } }
 		// Attack
-		public virtual float ChargeMax { get { return 0.5f; } }
-		public virtual float ChargeMin { get { return 0.5f; } }
-		public virtual float EnegyMax { get { return 5.0f; } }
+		public virtual float ChargeMax { get { return 0.3f; } }
+		public virtual float ChargeMin { get { return 0.5f; } }	// 使わない予定
+		public virtual float EnegyMax { get { return 30.0f; } }
 
 		// Bullet
 		public virtual float StallTime { get { return 0.1f; } }
