@@ -24,11 +24,9 @@ webSocketServer.on('request', function (req) {
 	}
 	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
 	_connections[req.key] = websocket;
-	var start = new Object();
 	var group = 1 + getRandom(2);
 	var history = [];
-	start.TIME = getPassedTime();
-	start.DATA = { nam:"sta", sta:"accept", grp:group, id:req.key };
+	var start = makeHistoryItem( { nam:"sta", sta:"accept", grp:group, id:req.key } );
 	websocket.send(JSON.stringify(start));
 
 	websocket.on('message', function(msg) {
@@ -36,14 +34,11 @@ webSocketServer.on('request', function (req) {
 		var list = JSON.parse(msg.binaryData);
 		for(var i in list)
 		{
-			var obj = new Object();
-			obj.TIME = getPassedTime();
-			obj.DATA = list[i];
+			var obj = makeHistoryItem( list[i] );
 			_syncs.push(obj);
 			history.push(obj);
 			if(obj.DATA.nam == "sta" && obj.DATA.sta == "dead"){
-				console.log(req.key + '[dead]');
-				if(history.length > 100) saveHistory(group, getRandom(10), history);
+				saveHistory(group, getRandom(10), history);
 				history = [];
 			}
 		}
@@ -53,6 +48,8 @@ webSocketServer.on('request', function (req) {
 	websocket.on('close', function (code,desc) {
 		console.log(req.key + '[disconnected]');
 		delete _connections[req.key];
+		var obj = makeHistoryItem( { nam:"sta", sta:"dead", grp:group, id:req.key.substr(0,4) } );
+		history.push(obj);
 		saveHistory(group, getRandom(10), history);
 	});
 });
@@ -78,6 +75,8 @@ function getRandom(range){
 	return Math.floor( Math.random() * range );
 }
 function saveHistory(group, index, history){
+	if(history.length < 300) return;
+
 	var start =  history[0].TIME;
 	for(var i = 0; i < history.length; i++) history[i].TIME -= start;
     fs.writeFile("../history/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
@@ -106,6 +105,12 @@ function updateHistory(){
 			delete history[j];
         }
     }
+}
+function makeHistoryItem(item){
+	var o = new Object();
+	o.TIME = getPassedTime();
+	o.DATA = item;
+	return o;
 }
 
 // Broadcasting

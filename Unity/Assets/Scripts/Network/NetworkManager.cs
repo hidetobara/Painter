@@ -168,6 +168,9 @@ namespace Painter
 			{
 				return false;
 			}
+			PlayerController controller = PlayerController.Get(ball.Id);
+			if (controller == null) return false;
+			if (!controller.Enable) return false;
 
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
 			o.GetComponent<InkBallController>().Initialize(ball);
@@ -187,6 +190,21 @@ namespace Painter
 				Debug.Log("Player " + player.Id + " created");
 			}
 			controller.Recieve(player);
+			return true;
+		}
+		private bool SynchronizeStatus(Synchronized s)
+		{
+			SyncStatus status = s as SyncStatus;
+			if (status == null || status.IsMine()) return false;
+
+			if(status.Status == NetworkStatus.Dead)
+			{
+				Debug.Log("[dead] ID=" + status.Id);
+				PlayerController controller = PlayerController.Get(status.Id);
+				if (controller == null) return false;
+				controller.Enable = false;
+				return true;
+			}
 			return true;
 		}
 	}

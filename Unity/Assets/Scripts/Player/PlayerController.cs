@@ -24,6 +24,11 @@ namespace Painter
 
 		protected PlayerProperty _Player = new PlayerProperty();
 		protected WeaponProperty _Weapon = new WeaponProperty();
+		public bool Enable
+		{
+			set { gameObject.SetActive(value); }
+			get { return gameObject.activeSelf; }
+		}
 
 		public bool Register(SyncPlayer s)
 		{
@@ -38,6 +43,8 @@ namespace Painter
 		public void Recieve(SyncPlayer p)
 		{
 			if (p == null || p.Id != _Player.ID) return;
+			if (!Enable) return;
+
 			transform.position = p.Position;
 			transform.rotation = p.Rotation;
 		}
