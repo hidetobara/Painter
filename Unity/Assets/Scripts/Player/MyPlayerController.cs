@@ -69,6 +69,7 @@ namespace Painter
 		{
 			_PlayerMovement.BecomeStarting();
 			_InkMovement.Reset();
+			NetworkManager.Instance.AddStatus(NetworkStatus.Born);
 		}
 
 		void Update()

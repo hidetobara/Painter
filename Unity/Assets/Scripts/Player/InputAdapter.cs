@@ -23,7 +23,7 @@ namespace Painter
 			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
 			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
 
-			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -44f, 44f), 0, 0); Log.Instance.AddInfo("weapon:" + weapon);
+			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -30f, 30f), 0, 0); Log.Instance.AddInfo("weapon:" + weapon);
 			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
 			player.WeaponAngle = _BufferWeaponAngle;
 

@@ -44,7 +44,7 @@ namespace Painter
 			var socket = new WebSocket(new Uri(ConstantEnviroment.Instance.Network.Address));
 			yield return StartCoroutine(socket.Connect());
 
-			JsonHash hash = new SyncStatus() { Group = MyPlayerController.Instance.Group, Status = NetworkStatus.Joining }.ToHash();
+			JsonHash hash = new SyncStatus() { Group = MyPlayerController.Instance.Group, Status = NetworkStatus.Join }.ToHash();
 			socket.SendString(Json.Serialize(new JsonList() { hash }));
 
 			while (true)
@@ -158,6 +158,7 @@ namespace Painter
 				_SynchronizedQueue.Dequeue();	// 使ったので捨てる
 				if (SynchronizeBall(s)) continue;
 				if (SynchronizePlayer(s)) continue;
+				if (SynchronizeStatus(s)) continue;
 			}
 		}
 		private bool SynchronizeBall(Synchronized s)

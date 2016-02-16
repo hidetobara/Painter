@@ -96,13 +96,16 @@ function loadHistory(group, index){
 }
 function updateHistory(){
 	var current = getPassedTime();
-    for(var i in _historys){
-        var history = _historys[i];
-		if(history.length == 0){ dump("# history=" + _historys.length); delete _historys[i]; continue; }
-        for(var j in history){
+	for(var i in _historys){
+		var history = _historys[i];
+		for(var j in history){
         	if(history[j].TIME > current) break;
 			_syncs.push((history[j]));
 			delete history[j];
+			if(history.length -1 == j){
+				delete _historys[i];
+				dump("[history] delete=" + i);
+			}
         }
     }
 }
