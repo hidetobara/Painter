@@ -19,8 +19,8 @@ webSocketServer.on('request', function (req) {
 	var count = countKeys(_connections);
 	if(count == 0){
 		resetPassedTime();
-		loadHistory(1, 0);
-		loadHistory(2, 0);
+		loadHistory(1, getRandom(3));
+		loadHistory(2, getRandom(3));
 	}
 	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
 	_connections[req.key] = websocket;
@@ -46,7 +46,7 @@ webSocketServer.on('request', function (req) {
 	});
 
 	websocket.on('close', function (code,desc) {
-		console.log(req.key + '[disconnected]');
+		console.log('[disconnected] id=' + req.key);
 		delete _connections[req.key];
 		var obj = makeHistoryItem( { nam:"sta", sta:"dead", grp:group, id:req.key.substr(0,4) } );
 		history.push(obj);
@@ -100,11 +100,13 @@ function updateHistory(){
 		var history = _historys[i];
 		for(var j in history){
         	if(history[j].TIME > current) break;
+			var group = history[j].DATA.grp;
 			_syncs.push((history[j]));
 			delete history[j];
 			if(history.length -1 == j){
 				delete _historys[i];
-				dump("[history] delete=" + i);
+				if(countKeys(_connections) > 0) loadHistory(group, getRandom(3));
+				if(countKeys(_connections) == 0){ _historys = []; dump("[history] reset"); }
 			}
         }
     }

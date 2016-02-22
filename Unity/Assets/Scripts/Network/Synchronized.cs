@@ -23,6 +23,7 @@ namespace Painter
 		protected const string TYPE = "typ";
 
 		public static string MyId;
+		public static int MyGroup;
 		public string Id;
 		public string ShortId { get { return Id.Substring(0, 4); } }
 		public int Group;
@@ -35,7 +36,7 @@ namespace Painter
 			JsonHash hash = new JsonHash();
 			hash[NAME] = Name;
 			hash[ID] = MyId;
-			hash[GROUP] = Group;
+			hash[GROUP] = MyGroup;
 			//hash[TIME] = Time;
 			return hash;
 		}

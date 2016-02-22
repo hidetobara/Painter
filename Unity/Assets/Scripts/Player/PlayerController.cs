@@ -24,7 +24,25 @@ namespace Painter
 
 		protected PlayerProperty _Player = new PlayerProperty();
 		protected WeaponProperty _Weapon = new WeaponProperty();
-		public bool Enable
+
+		private float _Energy;
+
+		void Start()
+		{
+			_Energy = _Weapon.EnegyMax;
+		}
+
+		void Update()
+		{
+			_Energy -= Time.deltaTime;
+			if(_Energy < 0)
+			{
+				Debug.Log("[dead by energy] ID=" + _Player.ID);
+				this.Alive = false;	// この端末上では死亡した
+			}
+		}
+
+		public bool Alive
 		{
 			set { gameObject.SetActive(value); }
 			get { return gameObject.activeSelf; }
@@ -43,7 +61,7 @@ namespace Painter
 		public void Recieve(SyncPlayer p)
 		{
 			if (p == null || p.Id != _Player.ID) return;
-			if (!Enable) return;
+			if (!Alive) return;
 
 			transform.position = p.Position;
 			transform.rotation = p.Rotation;
@@ -51,6 +69,15 @@ namespace Painter
 		public SyncPlayer Send()
 		{
 			return new SyncPlayer() { Id = _Player.ID, Group = _Player.Group, Position = transform.position, Rotation = transform.rotation };
+		}
+
+		void OnCollisionEnter(Collision collision)
+		{
+			var controller = collision.gameObject.GetComponent<InkBallController>();
+			if (controller == null) return;
+			if (_Player.Group == controller.Group) return;
+
+			_Energy -= controller.WeaponDamage;
 		}
 	}
 }

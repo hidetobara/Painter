@@ -19,7 +19,6 @@ namespace Painter
 		}
 
 		private PlayerMovement _PlayerMovement;
-		//private AttackMovement _AttackMovement;
 		private InkMovement _InkMovement;
 		bool _IsAttacking = false;
 
@@ -61,8 +60,8 @@ namespace Painter
 			_Player.Group = group;
 			_Player.ID = id;
 
-			BecomeStarting();
 			HubController.Get(_Player.Group).Restart(this);
+			BecomeStarting();
 		}
 
 		public void BecomeStarting()
@@ -132,9 +131,9 @@ namespace Painter
 			if (_InkMovement.IsDead) isDead = true;	// ここは良くないが・・
 			if(isDead)
 			{
-				BecomeStarting();
 				NetworkManager.Instance.AddStatus(NetworkStatus.Dead);
 				HubController.Get(_Player.Group).Restart(this);
+				BecomeStarting();
 			}
 		}
 

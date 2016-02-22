@@ -61,8 +61,9 @@ namespace Painter
 					if (status.Status == NetworkStatus.Accept)
 					{
 						// サーバーと接続できた時
-						Synchronized.MyId = status.ShortId;	// 自分IDを登録
-						MyPlayerController.Instance.SetID(status.Group, status.ShortId);	// 自分IDを登録
+						Synchronized.MyGroup = status.Group;	// 自分のGroupを登録
+						Synchronized.MyId = status.ShortId;	// 自分のIDを登録
+						MyPlayerController.Instance.SetID(status.Group, status.ShortId);
 						_StartTime = status.Time;	// 始まった時間
 						_WebSocket = socket;	// ソケット登録
 						Debug.Log("[Connected] Group=" + status.Group + " ID=" + Synchronized.MyId + " Time=" + _StartTime);
@@ -171,7 +172,7 @@ namespace Painter
 			}
 			PlayerController controller = PlayerController.Get(ball.Id);
 			if (controller == null) return false;
-			if (!controller.Enable) return false;
+			if (!controller.Alive) return false;
 
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
 			o.GetComponent<InkBallController>().Initialize(ball);
@@ -188,7 +189,7 @@ namespace Painter
 				GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabPlayer) as GameObject;
 				controller = o.GetComponent<PlayerController>();
 				controller.Register(player);
-				Debug.Log("Player " + player.Id + " created");
+				Debug.Log("[created] id=" + player.Id);
 			}
 			controller.Recieve(player);
 			return true;
@@ -200,10 +201,18 @@ namespace Painter
 
 			if(status.Status == NetworkStatus.Dead)
 			{
-				Debug.Log("[dead] ID=" + status.Id);
+				Debug.Log("[dead] id=" + status.Id);
 				PlayerController controller = PlayerController.Get(status.Id);
 				if (controller == null) return false;
-				controller.Enable = false;
+				controller.Alive = false;
+				return true;
+			}
+			if(status.Status == NetworkStatus.Born)
+			{
+				Debug.Log("[born] id=" + status.Id);
+				PlayerController controller = PlayerController.Get(status.Id);
+				if (controller == null) return false;
+				controller.Alive = true;
 				return true;
 			}
 			return true;

@@ -11,6 +11,8 @@ namespace Painter
 		public bool IsGroup2 { get { return Group == GroupProperty.GROUP2; } }
 		private WeaponProperty _Weapon;
 
+		public float WeaponDamage { get { return _Weapon.Damage; } }
+
 		public void Initialize(int group, WeaponProperty w)
 		{
 			Group = group;
