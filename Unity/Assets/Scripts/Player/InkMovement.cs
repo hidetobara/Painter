@@ -4,6 +4,9 @@ using System.Collections;
 
 namespace Painter
 {
+	/*
+	 * インク量と体力を同じにした
+	 */
 	public class InkMovement
 	{
 		private WeaponProperty _Property;
@@ -11,7 +14,7 @@ namespace Painter
 		float _Energy;
 		private float EnergyMax { get { return _Property.EnegyMax; } }
 		public float EnergyRate { get { return _Energy / _Property.EnegyMax; } }
-		public bool IsDead { get { return _Energy < 0; } }
+		public bool IsDead { get { return _Energy <= 0; } }
 
 		private float CharageMax { get { return _Property.ChargeMax; } }
 		float _Charaged;
@@ -24,6 +27,7 @@ namespace Painter
 			Reset();
 		}
 
+		public void BecomeDead() { _Energy = 0; }
 		public void Reset() { _Energy = EnergyMax; _Plane = PlaneStatus.Friends; }
 		public void SetPlane(PlaneStatus p) { _Plane = p; }
 

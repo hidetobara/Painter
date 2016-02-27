@@ -60,12 +60,19 @@ namespace Painter
 			_Player.Group = group;
 			_Player.ID = id;
 
-			HubController.Get(_Player.Group).Restart(this);
+			BecomeStarting();
+		}
+
+		public void BecomeDead()
+		{
+			NetworkManager.Instance.AddStatus(NetworkStatus.Dead);
+			// 間合いがあった方がいいか？
 			BecomeStarting();
 		}
 
 		public void BecomeStarting()
 		{
+			HubController.Get(_Player.Group).Restart(this);
 			_PlayerMovement.BecomeStarting();
 			_InkMovement.Reset();
 			NetworkManager.Instance.AddStatus(NetworkStatus.Born);
@@ -73,8 +80,23 @@ namespace Painter
 
 		void Update()
 		{
+			// 共通処理
 			_PlayerMovement.Update();
 			_Log.AddInfo(_PlayerMovement.PrintStatus());
+
+			// Camera
+			Vector3 target = gameObject.transform.position + Weapon.transform.rotation * _WeaponBias;
+			MainCamera.transform.position = gameObject.transform.position + Weapon.transform.rotation * _CameraBias;
+			MainCamera.transform.LookAt(target);
+
+			if (!_PlayerMovement.IsPlaying()) return;
+
+			// 死亡した時
+			if(_InkMovement.IsDead)
+			{
+				BecomeDead();
+				return;
+			}
 
 			// Around
 			Vector3 angle = gameObject.transform.rotation.eulerAngles;
@@ -84,11 +106,6 @@ namespace Painter
 			// Move
 			Vector3 move = gameObject.transform.rotation * new Vector3(_PlayerMovement.GetVelocitySide(), 0, _PlayerMovement.GetVelocityForward());
 			gameObject.transform.position += move;
-
-			// Camera
-			Vector3 target = gameObject.transform.position + Weapon.transform.rotation * _WeaponBias;
-			MainCamera.transform.position = gameObject.transform.position + Weapon.transform.rotation * _CameraBias;
-			MainCamera.transform.LookAt(target);
 
 			// Attack
 			_InkMovement.Update();
@@ -105,7 +122,6 @@ namespace Painter
 			if (!_PlayerMovement.IsPlaying()) return;
 
 			int damp = 0;
-			bool isDead = false;
 			foreach(var contact in collision.contacts)
 			{
 				GameObject o = contact.otherCollider.gameObject;
@@ -120,21 +136,13 @@ namespace Painter
 					}
 				}
 				DeathPlaneController death = o.GetComponent<DeathPlaneController>();
-				if (death != null) isDead = true;
+				if (death != null) _InkMovement.BecomeDead();
 			}
 			// 移動判定
 			PlaneStatus plane = PlaneStatus.None;
 			if (damp < 0) plane = PlaneStatus.Enemies; else if (damp > 0) plane = PlaneStatus.Friends;
 			_PlayerMovement.SetPlane(plane);
 			_InkMovement.SetPlane(plane);			
-			// 死亡判定
-			if (_InkMovement.IsDead) isDead = true;	// ここは良くないが・・
-			if(isDead)
-			{
-				NetworkManager.Instance.AddStatus(NetworkStatus.Dead);
-				HubController.Get(_Player.Group).Restart(this);
-				BecomeStarting();
-			}
 		}
 
 		#region 移動

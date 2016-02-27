@@ -31,6 +31,10 @@ namespace Painter
 
 		public virtual string Name { get; protected set; }
 
+		public override string ToString()
+		{
+			return Json.Serialize(ToHash());
+		}
 		public virtual JsonHash ToHash()
 		{
 			JsonHash hash = new JsonHash();

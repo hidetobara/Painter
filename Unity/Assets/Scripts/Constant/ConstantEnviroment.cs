@@ -36,6 +36,9 @@ namespace Painter
 
 		void Awake()
 		{
+			Debug.Log("[Enviroment] Awake");
+			if (_Instance == null) _Instance = GetComponent<ConstantEnviroment>();
+
 			NetworkManager.Instance.Initialize();
 
 			PrefabInkBall = Resources.Load(InkBallName);

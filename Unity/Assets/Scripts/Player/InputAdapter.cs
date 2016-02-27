@@ -6,8 +6,8 @@ namespace Painter
 {
 	public class InputAdapter : MonoBehaviour
 	{
-		private bool _IsPressedAttack = false;
-		private bool _IsPressedMove = false;
+		private bool _IsPressedAttack = false;	// Right
+		private bool _IsPressedMove = false;	// Left
 		private Vector3 _BufferWeaponAngle;
 
 		void Awake()
@@ -17,6 +17,28 @@ namespace Painter
 		}
 
 		void Update()
+		{
+			HandleLeftRightRotate();
+		}
+
+		private void HandleLeftRightRotate()
+		{
+			var player = MyPlayerController.Instance;
+			if (_IsPressedMove && _IsPressedAttack) player.MoveForward();
+			if (_IsPressedMove && !_IsPressedAttack) player.TurnLeft();
+			if (!_IsPressedMove && _IsPressedAttack) player.TurnRight();
+			if (!_IsPressedMove && !_IsPressedAttack) player.ActAttackStart(); else player.ActAttackEnd();
+
+#if !UNITY_EDITOR && !UNITY_STANDALONE
+			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
+
+			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -30f, 30f), 0, 0); Log.Instance.AddInfo("weapon:" + weapon);
+			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
+			player.WeaponAngle = _BufferWeaponAngle;
+#endif
+		}
+
+		private void HandleLeftMoveRightAttack()
 		{
 			var player = MyPlayerController.Instance;
 #if !UNITY_EDITOR && !UNITY_STANDALONE
@@ -36,12 +58,10 @@ namespace Painter
 		public void OnPressDownForAttack()
 		{
 			_IsPressedAttack = true;
-			MyPlayerController.Instance.ActAttackStart();
 		}
 		public void OnPressUpForAttack()
 		{
 			_IsPressedAttack = false;
-			MyPlayerController.Instance.ActAttackEnd();
 		}
 
 		public void OnPressDownForMove()
@@ -54,7 +74,10 @@ namespace Painter
 		}
 
 		#region 便利
-		float EulerAsin(float v) { return Mathf.Asin(Input.acceleration.y) * 180.0f / Mathf.PI; }
+		float EulerAsin(float v)
+		{
+			return Mathf.Asin(Mathf.Clamp(Input.acceleration.y, -1, 1)) * 180.0f / Mathf.PI;
+		}
 		#endregion
 	}
 }

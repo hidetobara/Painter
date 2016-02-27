@@ -34,7 +34,7 @@ namespace Painter
 
 		void Update()
 		{
-			_Energy -= Time.deltaTime;
+			_Energy -= Time.deltaTime * 0.5f;
 			if(_Energy < 0)
 			{
 				Debug.Log("[dead by energy] ID=" + _Player.ID);

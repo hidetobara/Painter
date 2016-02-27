@@ -19,8 +19,8 @@ webSocketServer.on('request', function (req) {
 	var count = countKeys(_connections);
 	if(count == 0){
 		resetPassedTime();
-		loadHistory(1, getRandom(3));
-		loadHistory(2, getRandom(3));
+		loadHistory(1, getRandom(10));
+		loadHistory(2, getRandom(10));
 	}
 	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
 	_connections[req.key] = websocket;
@@ -105,7 +105,7 @@ function updateHistory(){
 			delete history[j];
 			if(history.length -1 == j){
 				delete _historys[i];
-				if(countKeys(_connections) > 0) loadHistory(group, getRandom(3));
+				if(countKeys(_connections) > 0) loadHistory(group, getRandom(10));
 				if(countKeys(_connections) == 0){ _historys = []; dump("[history] reset"); }
 			}
         }

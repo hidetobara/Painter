@@ -84,6 +84,7 @@ namespace Painter
 			JsonList list = new JsonList();
 			foreach (var o in _SendingQueue)
 			{
+				if (o is SyncStatus) Debug.Log(o.ToString());
 				list.Add(o.ToHash());
 			}
 			string json = Json.Serialize(list);
@@ -186,9 +187,11 @@ namespace Painter
 			PlayerController controller = PlayerController.Get(player.Id);
 			if(controller == null)
 			{
+				// プレイヤーの新規作成
 				GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabPlayer) as GameObject;
 				controller = o.GetComponent<PlayerController>();
 				controller.Register(player);
+				o.name = "Player-" + player.Group + "." + player.Id;
 				Debug.Log("[created] id=" + player.Id);
 			}
 			controller.Recieve(player);

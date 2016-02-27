@@ -24,12 +24,12 @@ namespace Painter
 	{
 		public virtual string Name { get { return "gun"; } }
 		// Attack
-		public virtual float ChargeMax { get { return 0.3f; } }
+		public virtual float ChargeMax { get { return 0.5f; } }
 		public virtual float EnegyMax { get { return 30.0f; } }
 		public virtual float Damage { get { return 5.0f; } }
 
 		// Bullet
-		public virtual float StallTime { get { return 0.1f; } }
+		public virtual float StallTime { get { return 0.075f; } }
 		public virtual float BrokenTime { get { return 2.0f; } }
 		public virtual float Velocity { get { return 10.0f; } }
 
