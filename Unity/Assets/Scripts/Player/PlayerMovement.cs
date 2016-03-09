@@ -42,15 +42,15 @@ namespace Painter
 		}
 		public void MoveBack(float v = 1)
 		{
-			_VelocityForward = -_Property.ForwardRate * Mathf.Clamp(v, 0, 1) * 0.5f;
+			_VelocityForward = -_Property.ForwardRate * Mathf.Clamp(v, 0, 1);
 		}
 		public void MoveLeft(float v = 1)
 		{
-			_VelocitySide = _Property.ForwardRate * Mathf.Clamp(v, 0, 1);
+			_VelocitySide = -_Property.ForwardRate * Mathf.Clamp(v, 0, 1);
 		}
 		public void MoveRight(float v = 1)
 		{
-			_VelocitySide = -_Property.ForwardRate * Mathf.Clamp(v, 0, 1);
+			_VelocitySide = _Property.ForwardRate * Mathf.Clamp(v, 0, 1);
 		}
 		public void TurnLeft(float v = 1)
 		{

@@ -29,9 +29,9 @@ namespace Painter
 		public virtual float Damage { get { return 5.0f; } }
 
 		// Bullet
-		public virtual float StallTime { get { return 0.075f; } }
+		public virtual float StallTime { get { return 0.05f; } }
 		public virtual float BrokenTime { get { return 2.0f; } }
-		public virtual float Velocity { get { return 10.0f; } }
+		public virtual float Velocity { get { return 7.5f; } }
 
 		// Scatter
 		public virtual float ScatterVertical { get { return 0.25f; } }

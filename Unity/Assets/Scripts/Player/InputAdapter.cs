@@ -18,7 +18,7 @@ namespace Painter
 
 		void Update()
 		{
-			HandleLeftRightRotate();
+			HandleRotate();
 		}
 
 		private void HandleLeftRightRotate()
@@ -53,6 +53,33 @@ namespace Painter
 			else if (ax < 0.1f) player.TurnLeft(-ax);
 #endif
 			if (_IsPressedMove) player.MoveForward();
+		}
+
+		private void HandleRotate()
+		{
+			Vector3 weapon = Vector3.zero;
+
+			var player = MyPlayerController.Instance;
+#if !UNITY_EDITOR && !UNITY_STANDALONE
+			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
+			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
+			if (!_IsPressedAttack && !_IsPressedMove)
+			{
+				if (ax > 0) player.MoveRight(ax); else player.MoveLeft(-ax);
+				if (ay > 0) player.MoveForward(ay); else player.MoveBack(-ay);
+				player.ActAttackEnd();
+			}
+			else
+			{
+				if (ax > 0.1f) player.TurnRight(ax);
+				else if (ax < 0.1f) player.TurnLeft(-ax);
+				player.ActAttackStart();
+
+				weapon = new Vector3(Mathf.Clamp(EulerAsin(ay), -45f, 15f), 0, 0);
+			}
+#endif
+			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
+			player.WeaponAngle = _BufferWeaponAngle;
 		}
 
 		public void OnPressDownForAttack()

@@ -7,8 +7,8 @@ namespace Painter
 	public class MyPlayerController : PlayerController
 	{
 		public Camera MainCamera;
-		private Vector3 _WeaponBias = new Vector3(0, 0, 4);
-		private Vector3 _CameraBias = new Vector3(0, 4, -4);
+		private Vector3 _WeaponBias = new Vector3(0, 0, 1);	// (0,0,4)
+		private Vector3 _CameraBias = new Vector3(0, 8, -2);	// (0,4,-4)
 
 		private GameObject Weapon;
 		private Vector3 _WeaponAngle;
@@ -146,22 +146,12 @@ namespace Painter
 		}
 
 		#region 移動
-		public void MoveForward(float rate = 1)
-		{
-			_PlayerMovement.MoveForward(rate);
-		}
-		public void MoveBack(float rate = 1)
-		{
-			_PlayerMovement.MoveBack(rate);
-		}
-		public void TurnLeft(float rate = 1)
-		{
-			_PlayerMovement.TurnLeft(rate);
-		}
-		public void TurnRight(float rate = 1)
-		{
-			_PlayerMovement.TurnRight(rate);
-		}
+		public void MoveForward(float rate = 1) { _PlayerMovement.MoveForward(rate); }
+		public void MoveBack(float rate = 1) { _PlayerMovement.MoveBack(rate); }
+		public void MoveLeft(float rate = 1) { _PlayerMovement.MoveLeft(rate); }
+		public void MoveRight(float rate = 1) { _PlayerMovement.MoveRight(rate); }
+		public void TurnLeft(float rate = 1) { _PlayerMovement.TurnLeft(rate); }
+		public void TurnRight(float rate = 1) { _PlayerMovement.TurnRight(rate); }
 		#endregion
 
 		#region 攻撃

@@ -48,6 +48,9 @@ namespace Painter
 		{
 			// 消費
 			float delta = Time.deltaTime;
+#if UNITY_EDITOR
+			delta *= 0.01f;
+#endif
 			switch (_Plane)
 			{
 				case PlaneStatus.None: _Energy -= 1f * delta; break;

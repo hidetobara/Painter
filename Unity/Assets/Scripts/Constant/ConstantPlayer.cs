@@ -10,7 +10,7 @@ namespace Painter
 		public int Group;
 		public string ID = "Any";
 
-		public virtual float ForwardRate { get { return 0.12f; } }
-		public virtual float AroundRate { get { return 2f; } }
+		public virtual float ForwardRate { get { return 0.5f; } }
+		public virtual float AroundRate { get { return 5f; } }
 	}
 }
