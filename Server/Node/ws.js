@@ -23,8 +23,11 @@ webSocketServer.on('request', function (req) {
 		loadHistory(2, getRandom(10));
 	}
 	console.log(getPassedString() + " key=" + req.key + ",connections=" + count);
+	// グループの指定
+	var group = calculateBestGroup();
+	websocket.group = group;
 	_connections[req.key] = websocket;
-	var group = 1 + getRandom(2);
+
 	var history = [];
 	var start = makeHistoryItem( { nam:"sta", sta:"accept", grp:group, id:req.key } );
 	websocket.send(JSON.stringify(start));
@@ -79,7 +82,7 @@ function saveHistory(group, index, history){
 
 	var start =  history[0].TIME;
 	for(var i = 0; i < history.length; i++) history[i].TIME -= start;
-    fs.writeFile("../history/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
+	fs.writeFile("../history/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
 	dump("[history] save=" + group + "/" + index);
 }
 function loadHistory(group, index){
@@ -116,6 +119,18 @@ function makeHistoryItem(item){
 	o.TIME = getPassedTime();
 	o.DATA = item;
 	return o;
+}
+
+function calculateBestGroup() {
+	var grp1 = 0;
+	var grp2 = 0;
+	for (var key in _connections) {
+		if (_connections[key].group == 1) grp1++;
+		if (_connections[key].group == 2) grp2++;
+	}
+	dump("[group] 1=" + grp1 + ",2=" + grp2);
+	if (grp1 == grp2) return 1 + getRandom(2);
+	if (grp1 > grp2) return 2; else return 1;
 }
 
 // Broadcasting
