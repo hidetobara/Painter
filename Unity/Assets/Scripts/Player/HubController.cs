@@ -14,6 +14,7 @@ namespace Painter
 			return _Instances[group];
 		}
 
+		const float RANGE = 1;
 		public int Group;
 
 		void Awake()
@@ -31,8 +32,13 @@ namespace Painter
 		public void Restart(PlayerController player)
 		{
 			// 位置をリセット
-			player.transform.position = transform.position;
+			player.transform.position = transform.position + GetRandomVector3();
 			player.transform.rotation = transform.rotation;
+		}
+
+		private Vector3 GetRandomVector3()
+		{
+			return new Vector3(Random.Range(-RANGE, RANGE), Random.Range(-RANGE, RANGE), 0);
 		}
 	}
 }
