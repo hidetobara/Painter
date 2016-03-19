@@ -111,7 +111,7 @@ namespace Painter
 			_InkMovement.Update();
 			float fire = 0;
 			fire = _InkMovement.Fire(_IsAttacking);
-			if (fire > 0) ActAttack();
+			if (fire > 0) ActAttack(fire / _InkMovement.CharageMax);
 			WeaponPanel.Instance.Value = _InkMovement.EnergyRate;
 			// Network
 			NetworkManager.Instance.AddNotify(this);
@@ -155,13 +155,13 @@ namespace Painter
 		#endregion
 
 		#region 攻撃
-		public void ActAttack()
+		public void ActAttack(float power = 1f)
 		{
 			GameObject o = Instantiate(ConstantEnviroment.Instance.PrefabInkBall) as GameObject;
 			Rigidbody r = o.GetComponent<Rigidbody>();
 			o.transform.position = Weapon.transform.position + Weapon.transform.rotation * new Vector3(0, 0, 1);
 			o.transform.rotation = Weapon.transform.rotation;
-			r.velocity = o.transform.rotation * new Vector3(RandomSide(_Weapon.ScatterHorizontal), RandomSide(_Weapon.ScatterVertical), _Weapon.Velocity);
+			r.velocity = o.transform.rotation * new Vector3(RandomSide(_Weapon.ScatterHorizontal), RandomSide(_Weapon.ScatterVertical), _Weapon.Velocity * power);
 
 			InkBallController controller = o.GetComponent<InkBallController>();
 			controller.Initialize(_Player.Group, _Weapon);

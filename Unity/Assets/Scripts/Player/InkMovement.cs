@@ -17,7 +17,7 @@ namespace Painter
 		public float EnergyRate { get { return _Energy / _Property.EnegyMax; } }
 		public bool IsDead { get { return _Energy <= 0; } }
 
-		private float CharageMax { get { return _Property.ChargeMax; } }
+		public float CharageMax { get { return _Property.ChargeMax; } }
 		float _Charaged;
 
 		PlaneStatus _Plane;
