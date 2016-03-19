@@ -14,7 +14,7 @@ namespace Painter
 			return _Instances[group];
 		}
 
-		const float RANGE = 2.5f;
+		const float RANGE = 2.0f;
 		public int Group;
 
 		void Awake()
@@ -38,7 +38,10 @@ namespace Painter
 
 		private Vector3 GetRandomVector3()
 		{
-			return new Vector3(Random.Range(-RANGE, RANGE), Random.Range(-RANGE, RANGE), 0);
+			float theta = Random.Range(0f, 1f);
+			float radius = RANGE * theta;
+			float radian = theta * Mathf.PI * 8;
+			return new Vector3(Mathf.Cos(radian) * radius, Mathf.Sin(radian) * radius, 0);
 		}
 	}
 }
