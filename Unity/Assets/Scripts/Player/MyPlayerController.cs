@@ -46,7 +46,7 @@ namespace Painter
 		{
 			// 固定設定
 			_Player = new PlayerProperty();
-			_Weapon = ConstantEnviroment.Instance.MyWeapon;
+			_Weapon = ConstantEnviroment.Instance.WeaponTable.Get(PermanentEnvironment.Instance.WeaponName);
 			// 動き
 			_PlayerMovement = new PlayerMovement(_Player);
 			// インク
@@ -110,7 +110,7 @@ namespace Painter
 			// Attack
 			_InkMovement.Update();
 			float fire = 0;
-			if (_IsAttacking) fire = _InkMovement.Fire();
+			fire = _InkMovement.Fire(_IsAttacking);
 			if (fire > 0) ActAttack();
 			WeaponPanel.Instance.Value = _InkMovement.EnergyRate;
 			// Network

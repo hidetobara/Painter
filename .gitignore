@@ -9,6 +9,7 @@ Unity/windows
 Unity/android
 
 Server/Node/history
+Resource/Origin
 
 .idea
 *.log

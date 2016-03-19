@@ -24,6 +24,7 @@ namespace Painter
 
 		protected PlayerProperty _Player = new PlayerProperty();
 		protected WeaponProperty _Weapon = new WeaponProperty();
+		private BufferVector3 _Position = new BufferVector3();
 
 		private float _Energy;
 
@@ -34,6 +35,9 @@ namespace Painter
 
 		void Update()
 		{
+			_Position.Update();
+			transform.position = _Position.Buffered;
+
 			_Energy -= Time.deltaTime * 0.5f;
 			if(_Energy < 0)
 			{
@@ -63,7 +67,8 @@ namespace Painter
 			if (p == null || p.Id != _Player.ID) return;
 			if (!Alive) return;
 
-			transform.position = p.Position;
+			//transform.position = p.Position;
+			_Position.Real = p.Position;
 			transform.rotation = p.Rotation;
 		}
 		public SyncPlayer Send()

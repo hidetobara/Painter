@@ -14,7 +14,7 @@ namespace Painter
 			return _Instances[group];
 		}
 
-		const float RANGE = 1;
+		const float RANGE = 2.5f;
 		public int Group;
 
 		void Awake()
