@@ -29,7 +29,7 @@ namespace Painter
 			_Log = gameObject.AddComponent<GUIText>();
 			_Log.transform.localPosition = new Vector3(0.1f, 0.9f, 0);
 			_Log.text = CalculateVertexes();
-			_Log.fontSize = 16;
+			_Log.fontSize = 24;
 
 			Input.gyro.enabled = true;
 		}

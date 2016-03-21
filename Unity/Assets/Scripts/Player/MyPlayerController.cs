@@ -7,8 +7,8 @@ namespace Painter
 	public class MyPlayerController : PlayerController
 	{
 		public Camera MainCamera;
-		private Vector3 _WeaponBias = new Vector3(0, 0, 1);	// (0,0,4)
-		private Vector3 _CameraBias = new Vector3(0, 8, -2);	// (0,4,-4)
+		private Vector3 _WeaponBias = new Vector3(0, 0, 2);	// (0,0,4)
+		private Vector3 _CameraBias = new Vector3(0, 3, -6);	// (0,4,-4)
 
 		private GameObject Weapon;
 		private Vector3 _WeaponAngle;

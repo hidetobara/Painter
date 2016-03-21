@@ -19,6 +19,7 @@ namespace Painter
 		void Update()
 		{
 			HandleRotate();
+			//Log.Instance.AddInfo("acc:" + Input.acceleration);
 		}
 
 		private void HandleLeftRightRotate()
@@ -45,7 +46,7 @@ namespace Painter
 			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
 			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
 
-			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -30f, 30f), 0, 0); Log.Instance.AddInfo("weapon:" + weapon);
+			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -30f, 30f), 0, 0);
 			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
 			player.WeaponAngle = _BufferWeaponAngle;
 
@@ -62,11 +63,11 @@ namespace Painter
 			var player = MyPlayerController.Instance;
 #if !UNITY_EDITOR && !UNITY_STANDALONE
 			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
-			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
+			float ay = Input.acceleration.z;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
 			if (!_IsPressedAttack && !_IsPressedMove)
 			{
 				if (ax > 0) player.MoveRight(ax); else player.MoveLeft(-ax);
-				if (ay > 0) player.MoveForward(ay); else player.MoveBack(-ay);
+				if (ay < 0) player.MoveForward(-ay); else player.MoveBack(ay);
 				player.ActAttackEnd();
 			}
 			else
@@ -75,7 +76,7 @@ namespace Painter
 				else if (ax < 0.1f) player.TurnLeft(-ax);
 				player.ActAttackStart();
 
-				weapon = new Vector3(Mathf.Clamp(EulerAsin(ay), -45f, 15f), 0, 0);
+				weapon = new Vector3(Mathf.Clamp(EulerAsin(-ay), -45f, 30f), 0, 0);
 			}
 #endif
 			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
@@ -103,7 +104,7 @@ namespace Painter
 		#region 便利
 		float EulerAsin(float v)
 		{
-			return Mathf.Asin(Mathf.Clamp(Input.acceleration.y, -1, 1)) * 180.0f / Mathf.PI;
+			return Mathf.Asin(Mathf.Clamp(v, -1, 1)) * 180.0f / Mathf.PI;
 		}
 		#endregion
 	}
