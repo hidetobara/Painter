@@ -1,10 +1,12 @@
-﻿var http = require('http');
+﻿var _port = process.argv[ process.argv.length - 1 ];
+
+var http = require('http');
 var fs = require('fs');
 var WSServer = require('websocket').server;
 var plainHttpServer = http.createServer(function(req, res) {
 	res.writeHead(200, { 'Content-Type': 'text/html'});
 	res.end('Hello world');
-}).listen(55555);
+}).listen(_port);
 var webSocketServer = new WSServer({httpServer: plainHttpServer});
 
 var _start = 0;
@@ -12,7 +14,7 @@ var _connections = {};
 var _syncs = [];
 var _historys = [];
 
-console.log("# Now waiting sockets.");
+console.log("# Now waiting sockets. port=" + _port);
 
 webSocketServer.on('request', function (req) {
 	var websocket = req.accept(null, req.origin);
@@ -82,11 +84,11 @@ function saveHistory(group, index, history){
 
 	var start =  history[0].TIME;
 	for(var i = 0; i < history.length; i++) history[i].TIME -= start;
-	fs.writeFile("../history/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
+	fs.writeFile("../history/" + _port + "/" + group + "/" + index + ".log", JSON.stringify(history) , function(err) { if(err!=null)console.log(err); });
 	dump("[history] save=" + group + "/" + index);
 }
 function loadHistory(group, index){
-    fs.readFile("../history/" + group + "/" + index + ".log",
+    fs.readFile("../history/" + _port + "/" + group + "/" + index + ".log",
         function(err, data) {
             if(err) throw err;
             var list = JSON.parse(data);

@@ -1,4 +1,4 @@
-﻿#define STAGING
+﻿//#define STAGING
 using UnityEngine;
 using System.Collections;
 using Painter.Site;
@@ -18,6 +18,7 @@ namespace Painter
 		public WeaponTable WeaponTable { get; private set; }
 		public NetworkProperty Network { get; private set; }
 		public GroupProperty Group { get; private set; }
+		public SceneProperty Scene { get; private set; }
 
 		private static ConstantEnviroment _Instance;
 		public static ConstantEnviroment Instance
@@ -47,6 +48,8 @@ namespace Painter
 			WeaponTable = new WeaponTable();
 			Network = new NetworkProperty();
 			Group = new GroupProperty();
+			Scene = new SceneProperty();
+
 #if STAGING
 			Network = new StagingNetworkProperty();
 #endif

@@ -6,6 +6,9 @@ namespace Painter
 {
 	public class NetworkProperty
 	{
-		public virtual string Address { get { return "ws://127.0.0.1:55555/"; } }
+		public virtual string GetAddress(int port)
+		{
+			return "ws://127.0.0.1:" + port + "/";
+		}
 	}
 }

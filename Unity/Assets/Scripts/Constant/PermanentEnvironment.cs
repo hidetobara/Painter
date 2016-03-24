@@ -6,8 +6,11 @@ public class PermanentEnvironment : MonoBehaviour
 	private string PLAYER_NAME_KEY = "player_name";
 	private string WEAPON_NAME_KEY = "weapon_name";
 
+	// 永続
 	public string PlayerName = "";
 	public string WeaponName = "";
+	// アプリ生存中だけ
+	public string GameSceneName = "";
 
 	private static PermanentEnvironment _Instance;
 	public static PermanentEnvironment Instance

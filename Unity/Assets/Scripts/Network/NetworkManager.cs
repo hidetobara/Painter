@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace Painter
 {
@@ -40,8 +41,10 @@ namespace Painter
 		}
 		IEnumerator Connecting()
 		{
-			Debug.Log("[Connecting] IP=" + ConstantEnviroment.Instance.Network.Address + " Group=" + MyPlayerController.Instance.Group);
-			var socket = new WebSocket(new Uri(ConstantEnviroment.Instance.Network.Address));
+			var env = ConstantEnviroment.Instance;
+			string uri = env.Network.GetAddress(env.Scene.GetPort(PermanentEnvironment.Instance.GameSceneName));
+			Debug.Log("[Connecting] IP=" + uri + " Group=" + MyPlayerController.Instance.Group);
+			var socket = new WebSocket(new Uri(uri));
 			yield return StartCoroutine(socket.Connect());
 
 			JsonHash hash = new SyncStatus() { Group = MyPlayerController.Instance.Group, Status = NetworkStatus.Join }.ToHash();
