@@ -23,7 +23,6 @@ public class SelectWeaponController : MonoBehaviour
 	{
 		Debug.Log(PermanentEnvironment.Instance.WeaponName);
 		PermanentEnvironment.Instance.Save();
-		PermanentEnvironment.Instance.GameSceneName = SceneProperty.Stage1;
-		SceneManager.LoadScene(SceneProperty.Stage1);
+		SceneManager.LoadScene(SceneProperty.Stage2);
 	}
 }

@@ -90,7 +90,7 @@ function saveHistory(group, index, history){
 function loadHistory(group, index){
     fs.readFile("../history/" + _port + "/" + group + "/" + index + ".log",
         function(err, data) {
-            if(err) throw err;
+            if(err){ dump("[history] FAIL to load=" + group + "/" + index); return; }
             var list = JSON.parse(data);
             var current = getPassedTime();
             for(var i = 0; i < list.length; i++) list[i].TIME += current;

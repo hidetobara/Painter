@@ -9,8 +9,6 @@ public class PermanentEnvironment : MonoBehaviour
 	// 永続
 	public string PlayerName = "";
 	public string WeaponName = "";
-	// アプリ生存中だけ
-	public string GameSceneName = "";
 
 	private static PermanentEnvironment _Instance;
 	public static PermanentEnvironment Instance

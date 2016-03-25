@@ -42,7 +42,7 @@ namespace Painter
 		IEnumerator Connecting()
 		{
 			var env = ConstantEnviroment.Instance;
-			string uri = env.Network.GetAddress(env.Scene.GetPort(PermanentEnvironment.Instance.GameSceneName));
+			string uri = env.Network.GetAddress(env.Scene.GetPort(SceneManager.GetActiveScene().name));
 			Debug.Log("[Connecting] IP=" + uri + " Group=" + MyPlayerController.Instance.Group);
 			var socket = new WebSocket(new Uri(uri));
 			yield return StartCoroutine(socket.Connect());
