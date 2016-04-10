@@ -6,6 +6,7 @@ namespace Painter
 {
 	public class InputAdapter : MonoBehaviour
 	{
+		enum InputState { INACTIVE, NONE, ATTACK, MOVE, ATTACK_AND_MOVE }
 		private bool _IsPressedAttack = false;	// Right
 		private bool _IsPressedMove = false;	// Left
 		private Vector3 _BufferWeaponAngle;
@@ -18,67 +19,53 @@ namespace Painter
 
 		void Update()
 		{
-			HandleRotate();
-			//Log.Instance.AddInfo("acc:" + Input.acceleration);
-		}
+			InputState state = InputState.NONE;
+			if (_IsPressedMove && _IsPressedAttack) state = InputState.ATTACK_AND_MOVE;
+			else if (_IsPressedAttack) state = InputState.ATTACK;
+			else if (_IsPressedMove) state = InputState.MOVE;
 
-		private void HandleLeftRightRotate()
-		{
-			var player = MyPlayerController.Instance;
-			if (_IsPressedMove && _IsPressedAttack) player.MoveForward();
-			if (_IsPressedMove && !_IsPressedAttack) player.TurnLeft();
-			if (!_IsPressedMove && _IsPressedAttack) player.TurnRight();
-			if (!_IsPressedMove && !_IsPressedAttack) player.ActAttackStart(); else player.ActAttackEnd();
-
-#if !UNITY_EDITOR && !UNITY_STANDALONE
-			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
-
-			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -30f, 30f), 0, 0); Log.Instance.AddInfo("weapon:" + weapon);
-			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
-			player.WeaponAngle = _BufferWeaponAngle;
+			// 横で立てた持ち方で
+			// x: 初期0、右に傾けるとプラス、左に傾けるとマイナス
+			// z: 初期0、奥に転がすとプラス、手前に転がすとマイナス
+			Vector3 acc = Input.acceleration;
+			Log.Instance.AddInfo("acc:" + acc);
+#if UNITY_EDITOR || UNITY_STANDALONE
+			state = InputState.INACTIVE;
 #endif
+			HandleLeftMoveRightAttack(state, acc);
 		}
 
-		private void HandleLeftMoveRightAttack()
+		void HandleLeftMoveRightAttack(InputState state,Vector3 acc)
 		{
 			var player = MyPlayerController.Instance;
-#if !UNITY_EDITOR && !UNITY_STANDALONE
-			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
-			float ay = Input.acceleration.y;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
+			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(-acc.z), -45f, 30f), 0, 0);	// 視線
+			const float DUMP = 0.4f;	// 減衰
 
-			Vector3 weapon = new Vector3(Mathf.Clamp(EulerAsin(ay) + 30f, -30f, 30f), 0, 0);
-			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
-			player.WeaponAngle = _BufferWeaponAngle;
-
-			if (ax > 0.1f) player.TurnRight(ax);
-			else if (ax < 0.1f) player.TurnLeft(-ax);
-#endif
-			if (_IsPressedMove) player.MoveForward();
-		}
-
-		private void HandleRotate()
-		{
-			Vector3 weapon = Vector3.zero;
-
-			var player = MyPlayerController.Instance;
-#if !UNITY_EDITOR && !UNITY_STANDALONE
-			float ax = Input.acceleration.x;	// 初期0、右に傾けるとプラス、左に傾けるとマイナス
-			float ay = Input.acceleration.z;	// 初期0、奥に転がすとプラス、手前に転がすとマイナス
-			if (!_IsPressedAttack && !_IsPressedMove)
+			if(state == InputState.NONE)
 			{
-				if (ax > 0) player.MoveRight(ax); else player.MoveLeft(-ax);
-				if (ay < 0) player.MoveForward(-ay); else player.MoveBack(ay);
 				player.ActAttackEnd();
+				if (acc.x > 0) player.TurnRight(acc.x); else player.TurnLeft(-acc.x);
 			}
-			else
+			else if(state == InputState.MOVE)
 			{
-				if (ax > 0.1f) player.TurnRight(ax);
-				else if (ax < 0.1f) player.TurnLeft(-ax);
-				player.ActAttackStart();
-
-				weapon = new Vector3(Mathf.Clamp(EulerAsin(-ay), -45f, 30f), 0, 0);
+				player.ActAttackEnd();
+				if (acc.z < 0) player.MoveForward(-acc.z); else player.MoveBack(acc.z);
+				if (acc.x > 0) player.MoveRight(acc.x); else player.MoveLeft(-acc.x);
+				weapon = Vector3.zero;
 			}
-#endif
+			else if(state == InputState.ATTACK)
+			{
+				player.ActAttackStart();
+				if (acc.x > 0) player.TurnRight(acc.x); else player.TurnLeft(-acc.x);
+			}
+			else if(state == InputState.ATTACK_AND_MOVE)
+			{
+				player.ActAttackStart();
+				if (acc.x > 0) player.TurnRight(acc.x * DUMP); else player.TurnLeft(-acc.x * DUMP);
+				if (acc.x > 0) player.MoveRight(acc.x * DUMP); else player.MoveLeft(-acc.x * DUMP);
+				if (acc.z < 0) player.MoveForward(-acc.z * DUMP); else player.MoveBack(acc.z * DUMP);
+			}
+			// 視線
 			_BufferWeaponAngle = _BufferWeaponAngle * 0.9f + weapon * 0.1f;
 			player.WeaponAngle = _BufferWeaponAngle;
 		}
