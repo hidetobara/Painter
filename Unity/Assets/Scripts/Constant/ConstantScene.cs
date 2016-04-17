@@ -1,23 +1,23 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 public class SceneProperty
 {
-	public const string Select = "SelectProperty";
-	public const string Home = "Home";
-	public const string Stage1 = "Stage1";
-	public const string Stage2 = "Stage2";
+	public enum SceneName { Home = 55000, Stage1 = 55001, Stage2 = 55002 }
 
-	private Dictionary<string, int> _TablePort = new Dictionary<string, int>()
+	public int GetPort(string name)
 	{
-		{ Home, 55000 },
-		{ Stage1, 55001 }, { Stage2, 55002 }
-	};
+		foreach(SceneName n in Enum.GetValues(typeof(SceneName)))
+		{
+			if(n.ToString() == name) return (int)n;
+		}
+		return 55000;	// とりあえず
+	}
 
-	public int GetPort(string scene)
+	public int GetPort(SceneName scene)
 	{
-		if (!_TablePort.ContainsKey(scene)) return 55000;
-		return _TablePort[scene];
+		return (int)scene;
 	}
 }
