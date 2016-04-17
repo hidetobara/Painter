@@ -62,14 +62,14 @@ namespace Painter
 				if (group == GroupProperty.GROUP1)
 				{
 					z += 0.2f;
-					if (z > 1) z = 1;
-					if (w == 1) w = 0.99f;
+					if (z > 2) z = 2f;
+					if (w > 1) w = 1f;
 				}
 				if(group == GroupProperty.GROUP2)
 				{
 					w += 0.2f;
-					if (w > 1) w = 1;
-					if (z == 1) z = 0.99f;
+					if (w > 2f) w = 2f;
+					if (z > 1f) z = 1f;
 				}
 				_Inks[index] = new Vector4(v.x, v.y, z, w);
 			}

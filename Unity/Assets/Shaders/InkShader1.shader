@@ -55,24 +55,24 @@
 
 			fixed4 frag (v2f i) : SV_Target
 			{
-				const float SCALE = 0.9;
+				const float SCALE = 0.5;
 				fixed4 col = tex2D(_MainTex, i.uv0);
 				float theta1 = sin( i.uv1.x * 3 ) * sin( i.uv1.y * 5 );
 				float theta2 = sin( i.uv1.x * 5 ) * sin( i.uv1.y * 3 );
-				theta1 = theta1 * theta1;
-				theta2 = theta2 * theta2;
+				theta1 = i.uv1.z + theta1 * theta1 * SCALE - 1;
+				theta2 = i.uv1.w + theta2 * theta2 * SCALE - 1;
 				float4 lighten = i.normal;
 				if(_Color1.a == 0 && _Color2.a == 0) return col;
 
 				if(i.uv1.w > i.uv1.z)
 				{
-					if(i.uv1.z > 1 - theta1 * SCALE){ col = _Color1 + lighten; }
-					if(i.uv1.w > 1 - theta2 * SCALE){ col = _Color2 + lighten; }
+					if(theta1 > 0){ col = _Color1 + lighten; }
+					if(theta2 > 0){ col = _Color2 + lighten; }
 				}
 				else
 				{
-					if(i.uv1.w > 1 - theta2 * SCALE){ col = _Color2 + lighten; }
-					if(i.uv1.z > 1 - theta1 * SCALE){ col = _Color1 + lighten; }
+					if(theta2 > 0){ col = _Color2 + lighten; }
+					if(theta1 > 0){ col = _Color1 + lighten; }
 				}
 				return col;
 			}
