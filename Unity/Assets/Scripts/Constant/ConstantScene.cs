@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class SceneProperty
 {
-	public enum SceneName { Home = 55000, Stage1 = 55001, Stage2 = 55002 }
+	public enum SceneName { Home = 55000, Stage1 = 55001, Stage2 = 55002, Stage3 = 55003 }
 
 	public int GetPort(string name)
 	{

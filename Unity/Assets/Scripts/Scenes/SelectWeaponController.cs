@@ -32,6 +32,7 @@ namespace Painter
 				case 0: name = SceneProperty.SceneName.Stage1; break;
 				case 1: name = SceneProperty.SceneName.Stage2; break;
 			}
+			//name = SceneProperty.SceneName.Stage3;
 			SceneManager.LoadScene(name.ToString());
 		}
 	}

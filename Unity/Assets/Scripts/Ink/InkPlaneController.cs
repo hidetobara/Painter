@@ -8,9 +8,14 @@ namespace Painter
 {
 	public class InkPlaneController : MonoBehaviour
 	{
+		const float NEAR_DISTANCE = 1.1f;
+
+		public int AreaLimist;	
+
 		Mesh _Mesh;
 		List<Vector4> _Inks = new List<Vector4>();
 		Vector3[] _Worlds;
+		MeshTable _MeshTable;
 		private int _Length { get { return _Worlds.Length; } }
 
 		// Use this for initialization
@@ -23,10 +28,15 @@ namespace Painter
 
 			_Worlds = new Vector3[_Mesh.vertices.Length];
 			for (int v = 0; v < _Mesh.vertices.Length; v++) _Worlds[v] = transform.TransformPoint(_Mesh.vertices[v]);
+			_MeshTable = new MeshTable(AreaLimist, _Worlds);
 
 			Renderer render = GetComponent<Renderer>();
-			render.material.SetColor("_Color1", ConstantEnviroment.Instance.Color1);
-			render.material.SetColor("_Color2", ConstantEnviroment.Instance.Color2);
+			foreach (Material m in render.materials)
+			{
+				m.SetColor("_Color1", ConstantEnviroment.Instance.Color1);
+				m.SetColor("_Color2", ConstantEnviroment.Instance.Color2);
+			}
+			Debug.Log("name=" + name + " count=" + length);
 		}
 
 		void OnCollisionStay(Collision collision)
@@ -36,17 +46,17 @@ namespace Painter
 			foreach (var contact in collision.contacts)
 			{
 				var ball = contact.otherCollider.GetComponent<InkBallController>();
-				if (ball == null) continue;
-
-				for (int v = 0; v < _Length; v++)
+				if (ball != null)
 				{
-					if (IsNear(_Worlds[v], contact.point))
+					List<int> contacts = _MeshTable.Contacts(contact.point, NEAR_DISTANCE);
+					if (contacts.Count > 0)
 					{
-						if (ball.IsGroup1) group1.Add(v);
-						if (ball.IsGroup2) group2.Add(v);
+						if (ball.IsGroup1) group1.AddRange(contacts);
+						if (ball.IsGroup2) group2.AddRange(contacts);
 					}
 				}
 			}
+			if (group1.Count == 0 && group2.Count == 0) return;
 
 			UpdateInk(group1.Distinct().ToList(), GroupProperty.GROUP1);
 			UpdateInk(group2.Distinct().ToList(), GroupProperty.GROUP2);
@@ -61,39 +71,30 @@ namespace Painter
 				float w = v.w;
 				if (group == GroupProperty.GROUP1)
 				{
-					z += 0.2f;
-					if (z > 2) z = 2f;
+					z += 0.3f;
+					if (z > 1.1) z = 1.1f;
 					if (w > 1) w = 1f;
 				}
 				if(group == GroupProperty.GROUP2)
 				{
-					w += 0.2f;
-					if (w > 2f) w = 2f;
+					w += 0.3f;
+					if (w > 1.1f) w = 1.1f;
 					if (z > 1f) z = 1f;
 				}
 				_Inks[index] = new Vector4(v.x, v.y, z, w);
 			}
 		}
 
-		bool IsNear(Vector3 a, Vector3 b, float distance = 1.1f)
-		{
-			return Vector3.Distance(a, b) < distance;
-		}
-
-		public int CalclateGroup(Vector3 position, float distance = 3.0f)
+		public int CalclateGroup(Vector3 position)
 		{
 			int group = 0;
-			for(int i = 0; i < _Length; i++)
+			int index = -1;
+			if (_MeshTable.Nearest(position, out index))
 			{
-				float d = Vector3.Distance(position, _Worlds[i]);
-				if(distance > d)
-				{
-					distance = d;
-					float g1 = _Inks[i].z;
-					float g2 = _Inks[i].w;
-					if (g1 < 0.3f && g2 < 0.3f) continue;
-					if (g1 > g2) group = 1; else group = 2;
-				}
+				float g1 = _Inks[index].z;
+				float g2 = _Inks[index].w;
+				if (g1 < 0.3f && g2 < 0.3f) return group;
+				if (g1 > g2) group = 1; else group = 2;
 			}
 			return group;
 		}

@@ -129,7 +129,8 @@ namespace Painter
 				InkPlaneController ink = o.GetComponent<InkPlaneController>();
 				if (ink != null)
 				{
-					int group = ink.CalclateGroup(contact.point);
+					int group = 0;
+					//group = ink.CalclateGroup(contact.point);
 					if (group > 0)
 					{
 						if (group == _Player.Group) damp++; else damp--;
@@ -142,7 +143,7 @@ namespace Painter
 			PlaneStatus plane = PlaneStatus.None;
 			if (damp < 0) plane = PlaneStatus.Enemies; else if (damp > 0) plane = PlaneStatus.Friends;
 			_PlayerMovement.SetPlane(plane);
-			_InkMovement.SetPlane(plane);			
+			_InkMovement.SetPlane(plane);
 		}
 
 		#region 移動
