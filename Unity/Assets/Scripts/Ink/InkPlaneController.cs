@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,18 +86,22 @@ namespace Painter
 			}
 		}
 
-		public int CalclateGroup(Vector3 position)
+		IEnumerator _Calclating = null;
+		public void CalclateGroup(Vector3 position, Action<int> onGrouped)
 		{
-			int group = 0;
-			int index = -1;
-			if (_MeshTable.Nearest(position, out index))
-			{
-				float g1 = _Inks[index].z;
-				float g2 = _Inks[index].w;
-				if (g1 < 0.3f && g2 < 0.3f) return group;
-				if (g1 > g2) group = 1; else group = 2;
-			}
-			return group;
+			if(_Calclating != null) return;
+			_Calclating = _MeshTable.NearestGroupAsync(position, Group, onGrouped);
+			StartCoroutine(_Calclating);
+		}
+		private int Group(int index)
+		{
+			_Calclating = null;
+			if (index < 0) return 0;
+
+			float g1 = _Inks[index].z;
+			float g2 = _Inks[index].w;
+			if (g1 < 0.3f && g2 < 0.3f) return 0;
+			if (g1 > g2) return 1; return 2;
 		}
 
 		System.Random _Random = new System.Random();

@@ -121,27 +121,26 @@ namespace Painter
 		{
 			if (!_PlayerMovement.IsPlaying()) return;
 
-			int damp = 0;
 			foreach(var contact in collision.contacts)
 			{
 				GameObject o = contact.otherCollider.gameObject;
 				// 移動判定
 				InkPlaneController ink = o.GetComponent<InkPlaneController>();
-				if (ink != null)
-				{
-					int group = 0;
-					//group = ink.CalclateGroup(contact.point);
-					if (group > 0)
-					{
-						if (group == _Player.Group) damp++; else damp--;
-					}
-				}
+				if (ink != null) ink.CalclateGroup(contact.point, OnGrouped);
+				// 死亡判定
 				DeathPlaneController death = o.GetComponent<DeathPlaneController>();
 				if (death != null) _InkMovement.BecomeDead();
 			}
+		}
+
+		void OnGrouped(int group)
+		{
 			// 移動判定
 			PlaneStatus plane = PlaneStatus.None;
-			if (damp < 0) plane = PlaneStatus.Enemies; else if (damp > 0) plane = PlaneStatus.Friends;
+			if (group > 0)
+			{
+				if (group != _Player.Group) plane = PlaneStatus.Enemies; else plane = PlaneStatus.Friends;
+			}
 			_PlayerMovement.SetPlane(plane);
 			_InkMovement.SetPlane(plane);
 		}

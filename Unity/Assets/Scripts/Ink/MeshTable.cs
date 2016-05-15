@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -78,6 +79,18 @@ namespace Painter
 				if (block.Contact(point, _Around, float.MaxValue, out index)) return true;
 			}
 			return false;
+		}
+
+		public IEnumerator NearestGroupAsync(Vector3 point, Func<int, int> grouping, Action<int> onGrouped)
+		{
+			int index = -1;
+			foreach (MeshBlock block in _Blocks)
+			{
+				if (block.Contact(point, _Around, float.MaxValue, out index)) break;
+				yield return null;
+			}
+			int group = grouping(index); Debug.Log("#" + group);
+			onGrouped(group);
 		}
 
 		public bool Contact(Vector3 point, float border, out int index)
