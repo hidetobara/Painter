@@ -19,8 +19,10 @@ namespace Painter
 			_Weapon = w;
 
 			Renderer renderer = GetComponent<Renderer>();
-			if (renderer == null) return;
-			renderer.material.color = ConstantEnviroment.Instance.Group.GetColor(Group);
+			if (renderer != null)
+			{
+				renderer.material.color = ConstantEnviroment.Instance.Group.GetColor(Group);
+			}
 			StartCoroutine(StartingStall());
 		}
 
@@ -56,13 +58,20 @@ namespace Painter
 
 		void OnCollisionEnter(Collision collision)
 		{
-			foreach (var contact in collision.contacts)
+			foreach (ContactPoint contact in collision.contacts)
 			{
-				GameObject go = Instantiate(ConstantEnviroment.Instance.PrefabInkScatter) as GameObject;
-				go.transform.position = contact.point;
-				var controller = go.GetComponent<InkScatterController>();
-				controller.SetColor(ConstantEnviroment.Instance.Group.GetColor(Group));
+				if (contact.otherCollider.GetComponent<InkBallController>() != null) return;
+				if (_Weapon.ScatterCount > 0)
+				{
+					GameObject go = Instantiate(ConstantEnviroment.Instance.PrefabInkScatter) as GameObject;
+					go.transform.position = contact.point;
+					var controller = go.GetComponent<SplashAnimationController>();
+					controller.ScatterRange = _Weapon.ScatterRange;
+					controller.Initialize(Group, _Weapon.ScatterCount);
+				}
 			}
+			if (_Weapon is WeaponSplashProperty) return;
+
 			Destroy(this.gameObject, 0.1f);
 		}
 

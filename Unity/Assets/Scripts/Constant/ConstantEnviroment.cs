@@ -8,10 +8,12 @@ namespace Painter
 	public class ConstantEnviroment : MonoBehaviour
 	{
 		const string InkBallName = "InkBall";
-		const string InkScatterName = "InkScatter";
+		const string InkSubBallName = "InkSubBall";
+		const string InkScatterName = "InkSplash";
 		const string PlayerName = "Player";
 
 		public UnityEngine.Object PrefabInkBall { get; private set; }
+		public UnityEngine.Object PrefabSubInkBall { get; private set; }
 		public UnityEngine.Object PrefabInkScatter { get; private set; }
 		public UnityEngine.Object PrefabPlayer { get; private set; }
 
@@ -42,6 +44,7 @@ namespace Painter
 			NetworkManager.Instance.Initialize();
 
 			PrefabInkBall = Resources.Load(InkBallName);
+			PrefabSubInkBall = Resources.Load(InkSubBallName);
 			PrefabInkScatter = Resources.Load(InkScatterName);
 			PrefabPlayer = Resources.Load(PlayerName);
 

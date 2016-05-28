@@ -89,7 +89,7 @@ namespace Painter
 				if (block.Contact(point, _Around, float.MaxValue, out index)) break;
 				yield return null;
 			}
-			int group = grouping(index); Debug.Log("#" + group);
+			int group = grouping(index);
 			onGrouped(group);
 		}
 
