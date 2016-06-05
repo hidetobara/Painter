@@ -39,7 +39,18 @@ namespace Painter
 				case 2: name = SceneProperty.SceneName.Stage3; break;
 			}
 			//name = SceneProperty.SceneName.Stage3;
-			SceneManager.LoadScene(name.ToString());
+			StartCoroutine(LoadingScene(name.ToString()));
+		}
+
+		private IEnumerator LoadingScene(string name)
+		{
+			LoadingPanel.Instance.On();
+			var operation = SceneManager.LoadSceneAsync(name);
+			while (!operation.isDone)
+			{
+				LoadingPanel.Instance.SetProgress(operation.progress);
+				yield return null;
+			}
 		}
 	}
 }
