@@ -1,19 +1,17 @@
 fileFormatVersion: 2
-guid: b53400eb7c3fd4b4c918690ba665bdbe
-timeCreated: 1463592178
+guid: ad50de38edd82924e9c89855e1fdde4a
+timeCreated: 1465116800
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: mmGroup0
     400000: //RootNode
-    400002: mmGroup0
-    2300000: mmGroup0
-    3300000: mmGroup0
-    4300000: mmGroup0
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: AroundWall
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
   animations:
@@ -36,7 +34,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 5
+    globalScale: 20
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
