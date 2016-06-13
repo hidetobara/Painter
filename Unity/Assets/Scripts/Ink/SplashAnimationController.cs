@@ -26,6 +26,9 @@ namespace Painter
 			_Renders = GetComponentsInChildren<Renderer>();
 			SetColor(ConstantEnviroment.Instance.Group.GetColor(group));
 			SetScatter(count);
+
+			string name = "Ink" + ConstantEnviroment.Instance.Group.GetName(group);
+			EffekseerSystem.PlayEffect(name, this.transform.position);
 		}
 
 		void SetColor(Color color)

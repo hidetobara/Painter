@@ -4,6 +4,7 @@ using System.Collections;
 
 namespace Painter
 {
+	// 使用していない
 	public class InkScatterController : MonoBehaviour
 	{
 		private int _Group;
