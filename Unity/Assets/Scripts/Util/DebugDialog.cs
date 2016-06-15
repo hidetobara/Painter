@@ -52,6 +52,7 @@ namespace Painter
 
 		void OnGUI()
 		{
+#if UNITY_EDITOR || UNITY_STANDALONE
 			float size = Screen.height * 0.2f;
 			if (GUI.Button(new Rect(0, 0, size, size), "TRN L")) _MainPlayer.TurnLeft();
 			if (GUI.Button(new Rect(size, 0, size, size), "FRWRD")) _MainPlayer.MoveForward();
@@ -60,6 +61,7 @@ namespace Painter
 			if (GUI.Button(new Rect(size * 2, size, size, size), "MV R")) _MainPlayer.MoveRight();
 			if (GUI.Button(new Rect(size, size * 2, size, size), "BCK")) _MainPlayer.MoveBack();
 			if (GUI.Button(new Rect(size, size, size, size), "ATK")) _MainPlayer.ActAttack();
+#endif
 		}
 
 		void Print(string s) { _Log.text = s; }

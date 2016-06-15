@@ -26,6 +26,7 @@ namespace Painter
 		// Attack
 		public virtual bool IsAutoReloading { get { return true; } }
 		public virtual float ChargeMax { get { return 0.5f; } }
+		public virtual float ChargeMin { get { return 0; } }
 		public virtual float EnegyMax { get { return 30.0f; } }
 		public virtual float Damage { get { return 5.0f; } }
 
@@ -47,10 +48,11 @@ namespace Painter
 		// Attack
 		public override bool IsAutoReloading { get { return false; } }
 		public override float ChargeMax { get { return 3.0f; } }
+		public override float ChargeMin { get { return 1.0f; } }
 		public override float Damage { get { return 10.0f; } }
 
 		// Bullet
-		public override float StallTime { get { return 1.0f; } }
+		public override float StallTime { get { return 0.5f; } }
 		public override float BrokenTime { get { return 5.0f; } }
 		public override float Velocity { get { return 15.0f; } }
 
@@ -65,6 +67,7 @@ namespace Painter
 		// Attack
 		public override bool IsAutoReloading { get { return false; } }
 		public override float ChargeMax { get { return 5.0f; } }
+		public override float ChargeMin { get { return 4.0f; } }
 		public override float Damage { get { return 10.0f; } }
 
 		// Bullet

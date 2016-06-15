@@ -111,7 +111,7 @@ namespace Painter
 			_InkMovement.Update();
 			float fire = 0;
 			fire = _InkMovement.Fire(_IsAttacking);
-			if (fire > 0) ActAttack(fire / _InkMovement.CharageMax);
+			if (fire > 0) ActAttack(fire / _InkMovement.ChargeMax);
 			WeaponPanel.Instance.Value = _InkMovement.EnergyRate;
 			// Network
 			NetworkManager.Instance.AddNotify(this);

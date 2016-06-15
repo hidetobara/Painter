@@ -17,7 +17,8 @@ namespace Painter
 		public float EnergyRate { get { return _Energy / _Property.EnegyMax; } }
 		public bool IsDead { get { return _Energy <= 0; } }
 
-		public float CharageMax { get { return _Property.ChargeMax; } }
+		public float ChargeMax { get { return _Property.ChargeMax; } }
+		public float ChargeMin { get { return _Property.ChargeMin; } }
 		float _Charaged;
 
 		PlaneStatus _Plane;
@@ -40,13 +41,22 @@ namespace Painter
 
 		private float FireWithoutReload(bool enable)
 		{
+			// 開放時
 			if(!enable)
 			{
 				float tmp = _Charaged;
 				_Charaged = 0;
 				return tmp;
 			}
-			if (_Charaged > CharageMax) return 0;
+			// チャージ完了
+			if (_Charaged > ChargeMax) return 0;
+			// チャージ不足
+			if(_Charaged < ChargeMin)
+			{
+				_Charaged = ChargeMin;
+				_Energy -= ChargeMin;
+				return 0;
+			}
 
 			float delta = Time.deltaTime;
 			_Charaged += delta;
@@ -65,10 +75,10 @@ namespace Painter
 			float delta = Time.deltaTime;
 			_Charaged += delta;
 			_Energy -= delta;
-			if (_Charaged > CharageMax)
+			if (_Charaged > ChargeMax)
 			{
-				_Charaged -= CharageMax;
-				return CharageMax;
+				_Charaged -= ChargeMax;
+				return ChargeMax;
 			}
 			return 0;
 		}
