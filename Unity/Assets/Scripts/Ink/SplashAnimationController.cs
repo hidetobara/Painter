@@ -33,7 +33,6 @@ namespace Painter
 
 		void SetColor(Color color)
 		{
-			print(_Renders[0].name + " " + color);
 			foreach (Renderer r in _Renders) r.material.color = color;
 		}
 
